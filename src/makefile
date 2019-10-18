@@ -20,7 +20,7 @@ override LDFLAGS += \
 
 TARGETS = test
 
-DEPS = version.h $(shell find . -name '*.hpp' -or -name '*.h' -or -name '*.hh') 
+DEPS = $(shell find . -name '*.hpp' -or -name '*.h' -or -name '*.hh') 
 
 .PHONY: all
 all: $(TARGETS)
@@ -28,7 +28,7 @@ all: $(TARGETS)
 test: minesweepy.o
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
-propose.o:  $(DEPS)
+minesweepy.o:  $(DEPS)
 
 .PHONY: clean
 clean:
