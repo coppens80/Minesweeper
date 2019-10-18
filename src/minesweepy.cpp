@@ -2,13 +2,18 @@
 #include <iostream>
 #include <random>
 #include <sstream>
+#include "gameboard.h"
 
 int main(int argc, char** argv){
 
+    gameboard board("Medium");
+
     sf::RenderWindow window(sf::VideoMode(640, 480), "Minesweepy");
-    /* sf::CircleShape shape(100.f); */
-    /* shape.setFillColor(sf::Color::Green); */
-    /* shape.setOrigin(shape.getLocalBounds().width/2.0f, shape.getLocalBounds().height/2.0f); */
+    sf::RectangleShape cell(sf::Vector2f(25.f, 25.f));
+    cell.setFillColor(sf::Color::White);
+    cell.setOutlineThickness(2.f);
+    cell.setOutlineColor(sf::Color::Blue);
+    /* cell.setPosition(100., 100.); */
 
     int score = 12345;
     sf::Text text;
@@ -16,14 +21,14 @@ int main(int argc, char** argv){
     ss << score;
 
     sf::Font font;
-    if (!font.loadFromFile("../dep/Fonts/Arial/Arial.ttf"))
+    if (!font.loadFromFile("../dep/Fonts/Arial.ttf"))
         std::cout << "Font not loaded" << std::endl;
     text.setFont(font);
 
-    //text.setString("Hello world");
     text.setString(ss.str().c_str());
-    text.setCharacterSize(12);
-    text.setFillColor(sf::Color::Red);
+    text.setCharacterSize(20);
+    text.setFillColor(sf::Color::Black);
+    //text.setPosition(100.f, 100.f);
 
     //sf::Clock clock;
     sf::Event event;
@@ -60,9 +65,9 @@ int main(int argc, char** argv){
             sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
             window.close();
 
-        window.clear(sf::Color::Blue);
+        window.clear();
+        window.draw(cell);
         window.draw(text);
-        /* window.draw(shape); */
         window.display();
     }
 
