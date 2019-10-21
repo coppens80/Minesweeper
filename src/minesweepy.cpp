@@ -6,45 +6,17 @@
 
 int main(int argc, char** argv){
 
-    gameboard board("Medium");
-
-    sf::RenderWindow window(sf::VideoMode(640, 480), "Minesweepy");
-    sf::RectangleShape cell(sf::Vector2f(25.f, 25.f));
-    cell.setFillColor(sf::Color::White);
-    cell.setOutlineThickness(2.f);
-    cell.setOutlineColor(sf::Color::Blue);
-    /* cell.setPosition(100., 100.); */
-
-    int score = 12345;
-    sf::Text text;
-    std::stringstream ss;
-    ss << score;
-
-    sf::Font font;
-    if (!font.loadFromFile("../dep/Fonts/Arial.ttf"))
-        std::cout << "Font not loaded" << std::endl;
-    text.setFont(font);
-
-    text.setString(ss.str().c_str());
-    text.setCharacterSize(20);
-    text.setFillColor(sf::Color::Black);
-    //text.setPosition(100.f, 100.f);
+    gameboard board("Easy");
 
     //sf::Clock clock;
     sf::Event event;
 
-    //window.setKeyRepeatEnabled(False);
+    //board.window.setKeyRepeatEnabled(False);
 
-    while (window.isOpen()) {
-        while (window.pollEvent(event)) {
+    while (board.window->isOpen()) {
+        while (board.window->pollEvent(event)) {
             if (event.type == sf::Event::Closed)
-                window.close();
-            if (event.type == sf::Event::TextEntered){
-                if (event.text.unicode < 128){
-                    std::cout << static_cast<char>(event.text.unicode) << std::endl;
-                    text.setString(static_cast<char>(event.key.code));
-                }
-            }
+                board.window->close();
             
             if (event.type == sf::Event::MouseButtonPressed){
                 if (event.mouseButton.button == sf::Mouse::Left){
@@ -63,12 +35,9 @@ int main(int argc, char** argv){
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && 
             sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
-            window.close();
+            board.window->close();
 
-        window.clear();
-        window.draw(cell);
-        window.draw(text);
-        window.display();
+        board.drawBoard();
     }
 
     return 0;
