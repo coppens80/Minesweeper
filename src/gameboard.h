@@ -48,6 +48,7 @@ class gameboard {
         grid.reserve(num_squares);
         initBoard();
         setMines();
+        setNeighbourValues();
     }
 
         void drawBoard(void){
@@ -63,7 +64,6 @@ class gameboard {
                 for(int col=0; col<ncols; col++){
                     grid.push_back(cell);
                     grid[col + row * ncols].setPosition((col+1)*cell.box_size, (row+1)*cell.box_size);
-                    grid[col + row * ncols].setValue(col);
                 }
             }
         }
@@ -73,6 +73,28 @@ class gameboard {
             std::uniform_int_distribution<int> mine_idx(0, num_squares);
             for (int i=0; i<num_mines; i++)
                 grid[mine_idx(generator)].createMine();
+        }
+
+        void setNeighbourValues(void){
+            for(int row=0; row<nrows; row++){
+                for(int col=0; col<ncols; col++){
+                    int nearby_mines = 0;
+                    if(grid[col + row * ncols].is_mine)
+                        continue;
+                    
+                    for (int i=0; i<9; i++){
+                        int x = col + i/3 - 1;
+                        int y = row + i%3 - 1;
+                    
+                        if(x < 0 || x >= ncols || y < 0 || y >= nrows)
+                            continue;
+                        
+                        if(grid[x + y * ncols].is_mine)
+                            ++nearby_mines;
+                    }
+                    grid[col + row * ncols].setValue(nearby_mines);
+                }
+            }
         }
 };
 
