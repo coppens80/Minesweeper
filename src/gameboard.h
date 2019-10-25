@@ -58,6 +58,12 @@ class gameboard {
             window->display();
         }
 
+        void leftClick(const sf::Event& event) {
+            /* printf("%f, %f \n", event.mouse */
+            for(auto& square : grid)
+                square.click(event);
+        }
+
     private:
         void initBoard(void){
             for(int row=0; row<nrows; row++){

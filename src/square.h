@@ -20,7 +20,6 @@ class GridSquare : public sf::Drawable {
             if (!font.loadFromFile("../dep/Fonts/Arial.ttf"))
                 std::cout << "Font not loaded" << std::endl;
             text.setFont(font);
-            text.setString(std::to_string(val));
             text.setCharacterSize(20);
             text.setFillColor(sf::Color::Black);
         }
@@ -32,13 +31,22 @@ class GridSquare : public sf::Drawable {
         
         void setValue(int i){
             val = i;
-            text.setString(std::to_string(val).c_str());
+            if(val == 0)
+                text.setString(" ");
+            else
+                text.setString(std::to_string(val).c_str());
         }
 
         void createMine(void){
             is_mine = true;
             text.setString('x');
             text.setFillColor(sf::Color::Red);
+        }
+
+        void click(const sf::Event event) {
+            if(square.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)){
+                square.setFillColor(sf::Color::Blue);
+            }
         }
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const {
