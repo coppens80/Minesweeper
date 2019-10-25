@@ -60,9 +60,27 @@ class gameboard {
         }
 
         void leftClick(const sf::Event& event) {
-            for(auto& square : grid)
-                if(square.click(event))
-                    GameOver();
+            int idx = 0;
+            for(auto& square : grid){
+                if(square.flagged || square.is_clicked){
+                    ++idx;
+                    continue;
+                }
+                if(square.click(event)){
+                    if(square.is_mine)
+                        GameOver();
+                    else
+                        revealNeighbours(idx);
+                    break;
+                }
+                ++idx;
+            }
+            
+            /* if(grid[idx].is_mine && !grid[idx].flagged) */
+            /*     GameOver(); */
+            
+            /* if(!grid[idx].flagged) */
+                //revealNeighbours(idx);
         }
         
         void rightClick(const sf::Event& event) {
@@ -109,10 +127,32 @@ class gameboard {
             }
         }
 
+        void revealNeighbours(int i){
+            int col = i % ncols;
+            int row = (i - i % ncols) / ncols;
+            
+            for (int i=0; i<9; i++){
+                int x = col + i/3 - 1;
+                int y = row + i%3 - 1;
+                
+                if(x < 0 || x >= ncols || y < 0 || y >= nrows)
+                    continue;
+                if(x == col && y == row)
+                    continue;
+                
+                if(!grid[x+y*ncols].is_clicked && !grid[x+y*ncols].flagged && !grid[x+y*ncols].is_mine){
+                    grid[x+y*ncols].reveal(); 
+                    if (grid[x+y*ncols].val == 0)
+                        revealNeighbours(x + y * ncols);
+                }
+            }
+        }
+
         void GameOver(void){
             for(auto& square : grid)
-                square.reveal();
-            printf("Game Over!\n");
+                if(square.is_mine)
+                    square.reveal();
+            printf("Game Over :(\n");
         }
 };
 
