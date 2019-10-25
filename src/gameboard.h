@@ -69,18 +69,12 @@ class gameboard {
                 if(square.click(event)){
                     if(square.is_mine)
                         GameOver();
-                    else
+                    else if (square.val == 0)
                         revealNeighbours(idx);
                     break;
                 }
                 ++idx;
             }
-            
-            /* if(grid[idx].is_mine && !grid[idx].flagged) */
-            /*     GameOver(); */
-            
-            /* if(!grid[idx].flagged) */
-                //revealNeighbours(idx);
         }
         
         void rightClick(const sf::Event& event) {
