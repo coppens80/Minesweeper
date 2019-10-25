@@ -59,7 +59,6 @@ class gameboard {
         }
 
         void leftClick(const sf::Event& event) {
-            /* printf("%f, %f \n", event.mouse */
             for(auto& square : grid)
                 square.click(event);
         }
