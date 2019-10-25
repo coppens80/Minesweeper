@@ -46,7 +46,8 @@ class gameboard {
         num_squares = ncols * nrows;
         window = new sf::RenderWindow(sf::VideoMode(cell.box_size*(ncols+2), cell.box_size*(nrows+2)), "Minesweepy");
         grid.reserve(num_squares);
-        initBoard();
+        
+        createTiles();
         setMines();
         setNeighbourValues();
     }
@@ -60,7 +61,8 @@ class gameboard {
 
         void leftClick(const sf::Event& event) {
             for(auto& square : grid)
-                square.click(event);
+                if(square.click(event))
+                    GameOver();
         }
         
         void rightClick(const sf::Event& event) {
@@ -69,7 +71,7 @@ class gameboard {
         }
 
     private:
-        void initBoard(void){
+        void createTiles(void){
             for(int row=0; row<nrows; row++){
                 for(int col=0; col<ncols; col++){
                     grid.push_back(cell);
@@ -105,6 +107,12 @@ class gameboard {
                     grid[col + row * ncols].setValue(nearby_mines);
                 }
             }
+        }
+
+        void GameOver(void){
+            for(auto& square : grid)
+                square.reveal();
+            printf("Game Over!\n");
         }
 };
 

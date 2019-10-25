@@ -41,15 +41,18 @@ class GridSquare : public sf::Drawable {
             text.setFillColor(sf::Color::Red);
         }
 
-        void click(const sf::Event event) {
+        bool click(const sf::Event event) {
             if(square.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y) && !flagged){
                 is_clicked = true;
                 square.setFillColor(sf::Color::White);
+                if(is_mine) 
+                    return true;
             }
+            return false;
         }
         
         void flag(const sf::Event event) {
-            if(square.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)){
+            if(square.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y) && !is_clicked){
                 if (!flagged){
                     flagged = true;
                     square.setFillColor(sf::Color::Blue);
@@ -58,6 +61,11 @@ class GridSquare : public sf::Drawable {
                     square.setFillColor(sf::Color(84, 84, 84, 255));
                 }
             }
+        }
+
+        void reveal(void){
+            is_clicked = true;
+            square.setFillColor(sf::Color::White);
         }
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const {
