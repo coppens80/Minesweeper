@@ -6,7 +6,7 @@
 
 int main(int argc, char** argv){
 
-    gameboard board("Easy");
+    gameboard board("Hard");
 
     //sf::Clock clock;
     sf::Event event;
@@ -21,14 +21,10 @@ int main(int argc, char** argv){
             if (event.type == sf::Event::MouseButtonPressed){
                 if (event.mouseButton.button == sf::Mouse::Left){
                     board.leftClick(event);
-                    std::cout << "the left button was pressed" << std::endl;
                 }
                 if (event.mouseButton.button == sf::Mouse::Right){
                     board.rightClick(event);
-                    std::cout << "the right button was pressed" << std::endl;
                 }
-                std::cout << "mouse x: " << event.mouseButton.x << std::endl;
-                std::cout << "mouse y: " << event.mouseButton.y << std::endl;
             }
         }
 
