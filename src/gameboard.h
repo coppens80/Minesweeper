@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <vector>
+#include <random>
 #include "square.h"
 
 class gameboard {
@@ -18,6 +19,8 @@ class gameboard {
         std::string gamemode;
         GridSquare cell;
         std::vector<GridSquare> grid;
+        std::mt19937 generator;
+        std::random_device rd;
 
     // Methods
     public:
@@ -43,7 +46,8 @@ class gameboard {
         num_squares = ncols * nrows;
         window = new sf::RenderWindow(sf::VideoMode(cell.box_size*(ncols+2), cell.box_size*(nrows+2)), "Minesweepy");
         grid.reserve(num_squares);
-        createSquare();
+        initBoard();
+        setMines();
     }
 
         void drawBoard(void){
@@ -53,7 +57,8 @@ class gameboard {
             window->display();
         }
 
-        void createSquare(void){
+    private:
+        void initBoard(void){
             for(int row=0; row<nrows; row++){
                 for(int col=0; col<ncols; col++){
                     grid.push_back(cell);
@@ -63,6 +68,12 @@ class gameboard {
             }
         }
 
+        void setMines(void){
+            generator = std::mt19937(rd());
+            std::uniform_int_distribution<int> mine_idx(0, num_squares);
+            for (int i=0; i<num_mines; i++)
+                grid[mine_idx(generator)].createMine();
+        }
 };
 
 #endif

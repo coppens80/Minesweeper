@@ -7,7 +7,8 @@
 class GridSquare : public sf::Drawable {
     public:    
         float box_size = 25.f;
-        int val;
+        int val = 0;
+        bool is_mine = false;
     
     public:
         GridSquare(void){
@@ -15,7 +16,6 @@ class GridSquare : public sf::Drawable {
             square.setFillColor(sf::Color::White);
             square.setOutlineThickness(2.f);
             square.setOutlineColor(sf::Color::Black);
-            setValue(0);
             
             if (!font.loadFromFile("../dep/Fonts/Arial.ttf"))
                 std::cout << "Font not loaded" << std::endl;
@@ -29,9 +29,16 @@ class GridSquare : public sf::Drawable {
             square.setPosition(x, y);
             text.setPosition(x+6, y);
         }
+        
         void setValue(int i){
             val = i;
             text.setString(std::to_string(val).c_str());
+        }
+
+        void createMine(void){
+            is_mine = true;
+            text.setString('x');
+            text.setFillColor(sf::Color::Red);
         }
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const {
