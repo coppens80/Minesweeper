@@ -62,6 +62,11 @@ class gameboard {
             for(auto& square : grid)
                 square.click(event);
         }
+        
+        void rightClick(const sf::Event& event) {
+            for(auto& square : grid)
+                square.flag(event);
+        }
 
     private:
         void initBoard(void){

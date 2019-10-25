@@ -19,11 +19,7 @@ class GridSquare : public sf::Drawable {
             square.setOutlineThickness(2.f);
             square.setOutlineColor(sf::Color::Black);
             
-            if (!font.loadFromFile("../dep/Fonts/Arial.ttf"))
-                std::cout << "Font not loaded" << std::endl;
-            text.setFont(font);
-            text.setCharacterSize(20);
-            text.setFillColor(sf::Color::Black);
+            set_up_text();
         }
     
         void setPosition(float x, float y){
@@ -46,14 +42,26 @@ class GridSquare : public sf::Drawable {
         }
 
         void click(const sf::Event event) {
-            if(square.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)){
+            if(square.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y) && !flagged){
                 is_clicked = true;
+                square.setFillColor(sf::Color::White);
+            }
+        }
+        
+        void flag(const sf::Event event) {
+            if(square.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)){
+                if (!flagged){
+                    flagged = true;
+                    square.setFillColor(sf::Color::Blue);
+                }else{
+                    flagged = false;
+                    square.setFillColor(sf::Color(84, 84, 84, 255));
+                }
             }
         }
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const {
             if (is_clicked){
-                square.setFillColor(sf::Color::White);
                 target.draw(square);
                 target.draw(text);
             }else{
@@ -65,6 +73,14 @@ class GridSquare : public sf::Drawable {
         sf::RectangleShape square;
         sf::Text text;
         sf::Font font;
+
+        void set_up_text(void){
+            if (!font.loadFromFile("../dep/Fonts/Arial.ttf"))
+                std::cout << "Font not loaded" << std::endl;
+            text.setFont(font);
+            text.setCharacterSize(20);
+            text.setFillColor(sf::Color::Black);
+        }
 };
 
 #endif

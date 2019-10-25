@@ -19,11 +19,12 @@ int main(int argc, char** argv){
                 board.window->close();
             
             if (event.type == sf::Event::MouseButtonPressed){
-                board.leftClick(event);
                 if (event.mouseButton.button == sf::Mouse::Left){
+                    board.leftClick(event);
                     std::cout << "the left button was pressed" << std::endl;
                 }
                 if (event.mouseButton.button == sf::Mouse::Right){
+                    board.rightClick(event);
                     std::cout << "the right button was pressed" << std::endl;
                 }
                 std::cout << "mouse x: " << event.mouseButton.x << std::endl;
