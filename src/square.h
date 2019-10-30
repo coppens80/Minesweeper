@@ -14,20 +14,16 @@ class GridSquare : public sf::Drawable {
     
     public:
         GridSquare(void){
-            square.setSize(sf::Vector2f(box_size, box_size));
-            square.setFillColor(sf::Color(84, 84, 84, 255));
-            square.setOutlineThickness(2.f);
-            square.setOutlineColor(sf::Color::Black);
-            
-            set_up_text();
+            setup_square();
+            setup_text();
         }
     
-        void setPosition(float x, float y){
+        void set_position(float x, float y){
             square.setPosition(x, y);
             text.setPosition(x+6, y);
         }
         
-        void setValue(int i){
+        void set_value(int i){
             val = i;
             if(val == 0)
                 text.setString(" ");
@@ -35,7 +31,7 @@ class GridSquare : public sf::Drawable {
                 text.setString(std::to_string(val).c_str());
         }
 
-        void createMine(void){
+        void create_mine(void){
             val = -1;
             is_mine = true;
             text.setString('x');
@@ -84,7 +80,14 @@ class GridSquare : public sf::Drawable {
         sf::Text text;
         sf::Font font;
 
-        void set_up_text(void){
+        void setup_square(void){
+            square.setSize(sf::Vector2f(box_size, box_size));
+            square.setFillColor(sf::Color(84, 84, 84, 255));
+            square.setOutlineThickness(2.f);
+            square.setOutlineColor(sf::Color::Black);
+        }
+            
+        void setup_text(void){
             if (!font.loadFromFile("../dep/Fonts/Arial.ttf"))
                 std::cout << "Font not loaded" << std::endl;
             text.setFont(font);

@@ -6,8 +6,8 @@
 
 int main(int argc, char** argv){
 
-    gameboard board("Hard");
-    board.setBoard();
+    Gameboard board("Hard");
+    board.set_board();
 
     //sf::Clock clock;
     sf::Event event;
@@ -21,10 +21,10 @@ int main(int argc, char** argv){
             
             if (event.type == sf::Event::MouseButtonPressed){
                 if (event.mouseButton.button == sf::Mouse::Left){
-                    board.leftClick(event);
+                    board.left_click(event);
                 }
                 if (event.mouseButton.button == sf::Mouse::Right){
-                    board.rightClick(event);
+                    board.right_click(event);
                 }
             }
         }
@@ -39,7 +39,7 @@ int main(int argc, char** argv){
             sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
             board.reset();
 
-        board.drawBoard();
+        board.draw_board();
     }
 
     return 0;

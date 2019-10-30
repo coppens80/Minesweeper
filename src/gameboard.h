@@ -7,7 +7,7 @@
 #include <random>
 #include "square.h"
 
-class gameboard {
+class Gameboard {
     // Data
     public:
         sf::RenderWindow *window;
@@ -24,7 +24,7 @@ class gameboard {
 
     // Methods
     public:
-        gameboard(std::string mode) : gamemode(mode){
+        Gameboard(std::string mode) : gamemode(mode){
             std::cout << "Game mode: " << gamemode << std::endl;
 
             if (gamemode == "Easy"){
@@ -46,26 +46,26 @@ class gameboard {
             window = new sf::RenderWindow(sf::VideoMode(cell.box_size*(ncols+2), cell.box_size*(nrows+2)), "Minesweepy");
         }
 
-        void setBoard(void){
+        void set_board(void){
             grid.reserve(num_squares);
-            createTiles();
-            setMines();
-            setNeighbourValues();
+            create_tiles();
+            set_mines();
+            set_neighbour_values();
         }
 
         void reset(void){
             grid.clear();
-            setBoard();
+            set_board();
         }
 
-        void drawBoard(void){
+        void draw_board(void){
             window->clear();
             for(auto& square : grid)
                 window->draw(square);
             window->display();
         }
 
-        void leftClick(const sf::Event& event) {
+        void left_click(const sf::Event& event) {
             int idx = 0;
             for(auto& square : grid){
                 if(square.flagged || square.is_clicked){
@@ -74,38 +74,38 @@ class gameboard {
                 }
                 if(square.click(event)){
                     if(square.is_mine)
-                        GameOver();
+                        game_over();
                     else if (square.val == 0)
-                        revealNeighbours(idx);
+                        reveal_neighbours(idx);
                     break;
                 }
                 ++idx;
             }
         }
         
-        void rightClick(const sf::Event& event) {
+        void right_click(const sf::Event& event) {
             for(auto& square : grid)
                 square.flag(event);
         }
 
     private:
-        void createTiles(void){
+        void create_tiles(void){
             for(int row=0; row<nrows; row++){
                 for(int col=0; col<ncols; col++){
                     grid.push_back(cell);
-                    grid[col + row * ncols].setPosition((col+1)*cell.box_size, (row+1)*cell.box_size);
+                    grid[col + row * ncols].set_position((col+1)*cell.box_size, (row+1)*cell.box_size);
                 }
             }
         }
 
-        void setMines(void){
+        void set_mines(void){
             generator = std::mt19937(rd());
             std::uniform_int_distribution<int> mine_idx(0, num_squares);
             for (int i=0; i<num_mines; i++)
-                grid[mine_idx(generator)].createMine();
+                grid[mine_idx(generator)].create_mine();
         }
 
-        void setNeighbourValues(void){
+        void set_neighbour_values(void){
             for(int row=0; row<nrows; row++){
                 for(int col=0; col<ncols; col++){
                     int nearby_mines = 0;
@@ -122,12 +122,12 @@ class gameboard {
                         if(grid[x + y * ncols].is_mine)
                             ++nearby_mines;
                     }
-                    grid[col + row * ncols].setValue(nearby_mines);
+                    grid[col + row * ncols].set_value(nearby_mines);
                 }
             }
         }
 
-        void revealNeighbours(int i){
+        void reveal_neighbours(int i){
             int col = i % ncols;
             int row = (i - i % ncols) / ncols;
             
@@ -143,12 +143,12 @@ class gameboard {
                 if(!grid[x+y*ncols].is_clicked && !grid[x+y*ncols].flagged && !grid[x+y*ncols].is_mine){
                     grid[x+y*ncols].reveal(); 
                     if (grid[x+y*ncols].val == 0)
-                        revealNeighbours(x + y * ncols);
+                        reveal_neighbours(x + y * ncols);
                 }
             }
         }
 
-        void GameOver(void){
+        void game_over(void){
             for(auto& square : grid)
                 if(square.is_mine)
                     square.reveal();
