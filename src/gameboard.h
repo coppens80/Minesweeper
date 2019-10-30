@@ -24,33 +24,39 @@ class gameboard {
 
     // Methods
     public:
-        gameboard(std::string mode) : gamemode(mode)
-    {
-        std::cout << "Game mode: " << gamemode << std::endl;
+        gameboard(std::string mode) : gamemode(mode){
+            std::cout << "Game mode: " << gamemode << std::endl;
 
-        if (gamemode == "Easy"){
-            ncols = 9;
-            nrows = 9;
-            num_mines = 10;
-        }else if (gamemode == "Medium"){
-            ncols = 16;
-            nrows = 16;
-            num_mines = 40;
-        }else if (gamemode == "Hard"){
-            ncols = 30;
-            nrows = 16;
-            num_mines = 99;
+            if (gamemode == "Easy"){
+                ncols = 9;
+                nrows = 9;
+                num_mines = 10;
+            }else if (gamemode == "Medium"){
+                ncols = 16;
+                nrows = 16;
+                num_mines = 40;
+            }else if (gamemode == "Hard"){
+                ncols = 30;
+                nrows = 16;
+                num_mines = 99;
+            }
+            else
+                std::cout << "Invalid game mode" << std::endl;
+            num_squares = ncols * nrows;
+            window = new sf::RenderWindow(sf::VideoMode(cell.box_size*(ncols+2), cell.box_size*(nrows+2)), "Minesweepy");
         }
-        else
-            std::cout << "Invalid game mode" << std::endl;
-        num_squares = ncols * nrows;
-        window = new sf::RenderWindow(sf::VideoMode(cell.box_size*(ncols+2), cell.box_size*(nrows+2)), "Minesweepy");
-        grid.reserve(num_squares);
-        
-        createTiles();
-        setMines();
-        setNeighbourValues();
-    }
+
+        void setBoard(void){
+            grid.reserve(num_squares);
+            createTiles();
+            setMines();
+            setNeighbourValues();
+        }
+
+        void reset(void){
+            grid.clear();
+            setBoard();
+        }
 
         void drawBoard(void){
             window->clear();

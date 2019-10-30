@@ -7,6 +7,7 @@
 int main(int argc, char** argv){
 
     gameboard board("Hard");
+    board.setBoard();
 
     //sf::Clock clock;
     sf::Event event;
@@ -34,6 +35,9 @@ int main(int argc, char** argv){
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && 
             sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
             board.window->close();
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::R) && 
+            sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+            board.reset();
 
         board.drawBoard();
     }
