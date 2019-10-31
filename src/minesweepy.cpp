@@ -9,8 +9,9 @@ int main(int argc, char** argv){
     Gameboard board("Hard");
     board.set_board();
 
-    //sf::Clock clock;
+    sf::Clock clock;
     sf::Event event;
+    int elapsed_seconds;
 
     //board.window.setKeyRepeatEnabled(False);
 
@@ -28,8 +29,9 @@ int main(int argc, char** argv){
                 }
             }
         }
+        
 
-        //std::cout << "Elapsed time in ms: " << clock.getElapsedTime().asMicroseconds() << std::endl;
+        elapsed_seconds = int(clock.getElapsedTime().asSeconds());
         //clock.restart();
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && 
@@ -38,7 +40,8 @@ int main(int argc, char** argv){
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R) && 
             sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
             board.reset();
-
+        
+        board.game_time = elapsed_seconds;
         board.draw_board();
     }
 

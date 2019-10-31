@@ -11,6 +11,7 @@ class Gameboard {
     // Data
     public:
         sf::RenderWindow *window;
+        int game_time = 1;
     private:
         int num_squares;
         int ncols;
@@ -21,6 +22,8 @@ class Gameboard {
         std::vector<GridSquare> grid;
         std::mt19937 generator;
         std::random_device rd;
+        sf::Text game_score;
+        sf::Font font;
 
     // Methods
     public:
@@ -51,6 +54,7 @@ class Gameboard {
             create_tiles();
             set_mines();
             set_neighbour_values();
+            setup_game_score();
         }
 
         void reset(void){
@@ -59,7 +63,9 @@ class Gameboard {
         }
 
         void draw_board(void){
+            game_score.setString(std::to_string(game_time).c_str());
             window->clear();
+            window->draw(game_score);
             for(auto& square : grid)
                 window->draw(square);
             window->display();
@@ -153,6 +159,15 @@ class Gameboard {
                 if(square.is_mine)
                     square.reveal();
             printf("Game Over :(\n");
+        }
+        
+        void setup_game_score(void){
+            if (!font.loadFromFile("../dep/Fonts/Arial.ttf"))
+                std::cout << "Font not loaded" << std::endl;
+            game_score.setFont(font);
+            game_score.setCharacterSize(20);
+            game_score.setFillColor(sf::Color::White);
+            game_score.setPosition(0, 0);
         }
 };
 
