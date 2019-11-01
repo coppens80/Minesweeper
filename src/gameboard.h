@@ -21,8 +21,6 @@ class Gameboard {
         std::string gamemode;
         GridSquare cell;
         std::vector<GridSquare> grid;
-        std::mt19937 generator;
-        std::random_device rd;
         sf::Text score_display;
         sf::Font font;
         sf::Clock game_clock;
@@ -30,8 +28,6 @@ class Gameboard {
     // Methods
     public:
         Gameboard(std::string mode) : gamemode(mode){
-            std::cout << "Game mode: " << gamemode << std::endl;
-
             if (gamemode == "Easy"){
                 ncols = 9;
                 nrows = 9;
@@ -51,6 +47,7 @@ class Gameboard {
         }
 
         void set_board(void){
+            std::cout << "Game mode: " << gamemode << std::endl;
             game_clock.restart();
             num_flags = num_mines;
             grid.reserve(ncols * nrows);
@@ -111,7 +108,8 @@ class Gameboard {
         }
 
         void set_mines(void){
-            generator = std::mt19937(rd());
+            std::random_device rd;
+            std::mt19937 generator(rd());
             std::uniform_int_distribution<int> mine_idx(0, ncols * nrows);
             for (int i=0; i<num_mines; i++)
                 grid[mine_idx(generator)].create_mine();
