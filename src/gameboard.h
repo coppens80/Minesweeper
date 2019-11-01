@@ -11,9 +11,8 @@ class Gameboard {
     // Data
     public:
         sf::RenderWindow *window;
-        int game_time = 1;
+        int score = 1;
     private:
-        int num_squares;
         int ncols;
         int nrows;
         int num_mines;
@@ -22,8 +21,9 @@ class Gameboard {
         std::vector<GridSquare> grid;
         std::mt19937 generator;
         std::random_device rd;
-        sf::Text game_score;
+        sf::Text score_display;
         sf::Font font;
+        sf::Clock game_clock;
 
     // Methods
     public:
@@ -45,16 +45,16 @@ class Gameboard {
             }
             else
                 std::cout << "Invalid game mode" << std::endl;
-            num_squares = ncols * nrows;
             window = new sf::RenderWindow(sf::VideoMode(cell.box_size*(ncols+2), cell.box_size*(nrows+2)), "Minesweepy");
         }
 
         void set_board(void){
-            grid.reserve(num_squares);
+            game_clock.restart();
+            grid.reserve(ncols * nrows);
             create_tiles();
             set_mines();
             set_neighbour_values();
-            setup_game_score();
+            setup_score_display();
         }
 
         void reset(void){
@@ -63,9 +63,10 @@ class Gameboard {
         }
 
         void draw_board(void){
-            game_score.setString(std::to_string(game_time).c_str());
+            score = int(game_clock.getElapsedTime().asSeconds());
+            score_display.setString(std::to_string(score).c_str());
             window->clear();
-            window->draw(game_score);
+            window->draw(score_display);
             for(auto& square : grid)
                 window->draw(square);
             window->display();
@@ -106,7 +107,7 @@ class Gameboard {
 
         void set_mines(void){
             generator = std::mt19937(rd());
-            std::uniform_int_distribution<int> mine_idx(0, num_squares);
+            std::uniform_int_distribution<int> mine_idx(0, ncols * nrows);
             for (int i=0; i<num_mines; i++)
                 grid[mine_idx(generator)].create_mine();
         }
@@ -161,13 +162,13 @@ class Gameboard {
             printf("Game Over :(\n");
         }
         
-        void setup_game_score(void){
+        void setup_score_display(void){
             if (!font.loadFromFile("../dep/Fonts/Arial.ttf"))
                 std::cout << "Font not loaded" << std::endl;
-            game_score.setFont(font);
-            game_score.setCharacterSize(20);
-            game_score.setFillColor(sf::Color::White);
-            game_score.setPosition(0, 0);
+            score_display.setFont(font);
+            score_display.setCharacterSize(20);
+            score_display.setFillColor(sf::Color::White);
+            score_display.setPosition(0, 0);
         }
 };
 
