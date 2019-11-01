@@ -16,6 +16,7 @@ class Gameboard {
         int ncols;
         int nrows;
         int num_mines;
+        int num_flags;
         bool game_over = false;
         std::string gamemode;
         GridSquare cell;
@@ -51,6 +52,7 @@ class Gameboard {
 
         void set_board(void){
             game_clock.restart();
+            num_flags = num_mines;
             grid.reserve(ncols * nrows);
             create_tiles();
             set_mines();
@@ -95,7 +97,7 @@ class Gameboard {
         
         void right_click(const sf::Event& event) {
             for(auto& square : grid)
-                square.flag(event);
+                square.flag(event, num_flags);
         }
 
     private:

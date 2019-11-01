@@ -47,14 +47,16 @@ class GridSquare : public sf::Drawable {
             return false;
         }
         
-        void flag(const sf::Event event) {
+        void flag(const sf::Event event, int &num_flags) {
             if(square.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y) && !is_clicked){
-                if (!flagged){
+                if (!flagged && num_flags > 0){
                     flagged = true;
                     square.setFillColor(sf::Color::Blue);
-                }else{
+                    --num_flags;
+                }else if (flagged){
                     flagged = false;
                     square.setFillColor(sf::Color(84, 84, 84, 255));
+                    ++num_flags;
                 }
             }
         }
