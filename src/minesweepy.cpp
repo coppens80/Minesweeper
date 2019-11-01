@@ -6,8 +6,9 @@
 
 int main(int argc, char** argv){
 
-    Gameboard board("Hard");
+    Gameboard board("Easy");
     board.set_board();
+    board.window->setKeyRepeatEnabled(false);
 
     sf::Event event;
 
@@ -17,21 +18,21 @@ int main(int argc, char** argv){
                 board.window->close();
             
             if (event.type == sf::Event::MouseButtonPressed){
-                if (event.mouseButton.button == sf::Mouse::Left){
+                if (event.mouseButton.button == sf::Mouse::Left)
                     board.left_click(event);
-                }
-                if (event.mouseButton.button == sf::Mouse::Right){
+                if (event.mouseButton.button == sf::Mouse::Right)
                     board.right_click(event);
-                }
+            }
+
+            if (event.type == sf::Event::KeyPressed){
+                if (event.key.code == sf::Keyboard::R)
+                    board.reset();
             }
         }
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && 
             sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
             board.window->close();
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::R) && 
-            sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
-            board.reset();
         
         board.draw_board();
     }
