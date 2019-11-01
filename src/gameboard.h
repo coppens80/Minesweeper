@@ -21,7 +21,7 @@ class Gameboard {
         std::string gamemode;
         GridSquare cell;
         std::vector<GridSquare> grid;
-        sf::Text score_display;
+        sf::Text score_display, flag_display;
         sf::Font font;
         sf::Clock game_clock;
 
@@ -43,18 +43,18 @@ class Gameboard {
             }
             else
                 std::cout << "Invalid game mode" << std::endl;
-            window = new sf::RenderWindow(sf::VideoMode(cell.box_size*(ncols+2), cell.box_size*(nrows+2)), "Minesweepy");
+            window = new sf::RenderWindow(sf::VideoMode(cell.box_size*(ncols+2), cell.box_size*(nrows+3)), "Minesweepy");
         }
 
         void set_board(void){
             std::cout << "Game mode: " << gamemode << std::endl;
-            game_clock.restart();
             num_flags = num_mines;
             grid.reserve(ncols * nrows);
             create_tiles();
             set_mines();
             set_neighbour_values();
             setup_score_display();
+            game_clock.restart();
         }
 
         void reset(void){
@@ -67,8 +67,11 @@ class Gameboard {
             if (!game_over)
                 score = int(game_clock.getElapsedTime().asSeconds());
             score_display.setString(std::to_string(score).c_str());
+            flag_display.setString(std::to_string(num_flags).c_str());
+
             window->clear();
             window->draw(score_display);
+            window->draw(flag_display);
             for(auto& square : grid)
                 window->draw(square);
             window->display();
@@ -102,7 +105,7 @@ class Gameboard {
             for(int row=0; row<nrows; row++){
                 for(int col=0; col<ncols; col++){
                     grid.push_back(cell);
-                    grid[col + row * ncols].set_position((col+1)*cell.box_size, (row+1)*cell.box_size);
+                    grid[col + row * ncols].set_position((col+1)*cell.box_size, (row+2)*cell.box_size);
                 }
             }
         }
@@ -172,7 +175,11 @@ class Gameboard {
             score_display.setFont(font);
             score_display.setCharacterSize(20);
             score_display.setFillColor(sf::Color::White);
-            score_display.setPosition(0, 0);
+            score_display.setPosition(cell.box_size*(ncols-2), 12);
+            flag_display.setFont(font);
+            flag_display.setCharacterSize(20);
+            flag_display.setFillColor(sf::Color::White);
+            flag_display.setPosition(cell.box_size*3, 12);
         }
 };
 
