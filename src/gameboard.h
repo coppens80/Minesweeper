@@ -16,6 +16,7 @@ class Gameboard {
         int ncols;
         int nrows;
         int num_mines;
+        bool game_over = false;
         std::string gamemode;
         GridSquare cell;
         std::vector<GridSquare> grid;
@@ -59,11 +60,13 @@ class Gameboard {
 
         void reset(void){
             grid.clear();
+            game_over = false;
             set_board();
         }
 
         void draw_board(void){
-            score = int(game_clock.getElapsedTime().asSeconds());
+            if (!game_over)
+                score = int(game_clock.getElapsedTime().asSeconds());
             score_display.setString(std::to_string(score).c_str());
             window->clear();
             window->draw(score_display);
@@ -81,7 +84,7 @@ class Gameboard {
                 }
                 if(square.click(event)){
                     if(square.is_mine)
-                        game_over();
+                        end_game();
                     else if (square.val == 0)
                         reveal_neighbours(idx);
                     break;
@@ -155,7 +158,8 @@ class Gameboard {
             }
         }
 
-        void game_over(void){
+        void end_game(void){
+            game_over = true;
             for(auto& square : grid)
                 if(square.is_mine)
                     square.reveal();
