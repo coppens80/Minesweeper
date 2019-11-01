@@ -17,6 +17,7 @@ class Gameboard {
         int nrows;
         int num_mines;
         int num_flags;
+        int tiles_cleared;
         bool game_over = false;
         std::string gamemode;
         GridSquare cell;
@@ -49,6 +50,7 @@ class Gameboard {
         void set_board(void){
             std::cout << "Game mode: " << gamemode << std::endl;
             num_flags = num_mines;
+            tiles_cleared = 0;
             grid.reserve(ncols * nrows);
             create_tiles();
             set_mines();
@@ -87,12 +89,15 @@ class Gameboard {
                 if(square.click(event)){
                     if(square.is_mine)
                         end_game();
-                    else if (square.val == 0)
+                    else
+                        ++tiles_cleared;
+                    if (square.val == 0)
                         reveal_neighbours(idx);
                     break;
                 }
                 ++idx;
             }
+            std::cout << "cleared: " << tiles_cleared << std::endl;
         }
         
         void right_click(const sf::Event& event) {
@@ -114,7 +119,7 @@ class Gameboard {
             std::random_device rd;
             std::mt19937 generator(rd());
             std::uniform_int_distribution<int> mine_idx(0, ncols * nrows);
-            for (int i=0; i<num_mines; i++)
+            for (int i=0; i<=num_mines; i++)
                 grid[mine_idx(generator)].create_mine();
         }
 
@@ -155,6 +160,7 @@ class Gameboard {
                 
                 if(!grid[x+y*ncols].is_clicked && !grid[x+y*ncols].flagged && !grid[x+y*ncols].is_mine){
                     grid[x+y*ncols].reveal(); 
+                    ++tiles_cleared;
                     if (grid[x+y*ncols].val == 0)
                         reveal_neighbours(x + y * ncols);
                 }
