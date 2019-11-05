@@ -17,7 +17,7 @@ int main(int argc, char** argv){
             if (event.type == sf::Event::Closed)
                 board.window->close();
             
-            if (event.type == sf::Event::MouseButtonPressed){
+            if (event.type == sf::Event::MouseButtonPressed && !board.game_over){
                 if (event.mouseButton.button == sf::Mouse::Left)
                     board.left_click(event);
                 if (event.mouseButton.button == sf::Mouse::Right)
@@ -25,8 +25,10 @@ int main(int argc, char** argv){
             }
 
             if (event.type == sf::Event::KeyPressed){
-                if (event.key.code == sf::Keyboard::R)
+                if (event.key.code == sf::Keyboard::R){
+                    printf("reset\n");
                     board.reset();
+                }
             }
         }
         

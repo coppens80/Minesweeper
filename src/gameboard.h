@@ -11,14 +11,14 @@ class Gameboard {
     // Data
     public:
         sf::RenderWindow *window;
-        int score = 1;
+        int score;
+        bool game_over = false;
     private:
         int ncols;
         int nrows;
         int num_mines;
         int num_flags;
         int tiles_cleared;
-        bool game_over = false;
         std::string gamemode;
         GridSquare cell;
         std::vector<GridSquare> grid;
@@ -97,7 +97,8 @@ class Gameboard {
                 }
                 ++idx;
             }
-            std::cout << "cleared: " << tiles_cleared << std::endl;
+            if (tiles_cleared == nrows * ncols - num_mines)
+                win_game();
         }
         
         void right_click(const sf::Event& event) {
@@ -119,7 +120,7 @@ class Gameboard {
             std::random_device rd;
             std::mt19937 generator(rd());
             std::uniform_int_distribution<int> mine_idx(0, ncols * nrows);
-            for (int i=0; i<=num_mines; i++)
+            for (int i=0; i<num_mines; i++)
                 grid[mine_idx(generator)].create_mine();
         }
 
@@ -172,7 +173,15 @@ class Gameboard {
             for(auto& square : grid)
                 if(square.is_mine)
                     square.reveal();
-            printf("Game Over :(\n");
+            std::cout << "Game Over :(" << std::endl;
+            std::cout << "Press R to restart" << std::endl;
+        }
+
+        void win_game(void){
+            game_over = true;
+            std::cout << "You win!" << std::endl;
+            std::cout << "Score: " << score << std::endl;
+            std::cout << "Press R to restart" << std::endl;
         }
         
         void setup_score_display(void){
