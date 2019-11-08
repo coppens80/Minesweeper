@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 
-class GridSquare : public sf::Drawable {
+class GameTile : public sf::Drawable {
     public:    
         float box_size = 25.f;
         int val = 0;
@@ -13,13 +13,13 @@ class GridSquare : public sf::Drawable {
         bool is_clicked = false;
     
     public:
-        GridSquare(void){
-            setup_square();
+        GameTile(void){
+            setup_tile();
             setup_text();
         }
     
         void set_position(float x, float y){
-            square.setPosition(x, y);
+            tile.setPosition(x, y);
             text.setPosition(x+6, y);
         }
         
@@ -39,23 +39,23 @@ class GridSquare : public sf::Drawable {
         }
 
         bool click(const sf::Event event) {
-            if(square.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)){
+            if(tile.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)){
                 is_clicked = true;
-                square.setFillColor(sf::Color::White);
+                tile.setFillColor(sf::Color::White);
                 return true;
             }
             return false;
         }
         
         void flag(const sf::Event event, int &num_flags) {
-            if(square.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y) && !is_clicked){
+            if(tile.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y) && !is_clicked){
                 if (!flagged && num_flags > 0){
                     flagged = true;
-                    square.setFillColor(sf::Color::Blue);
+                    tile.setFillColor(sf::Color::Blue);
                     --num_flags;
                 }else if (flagged){
                     flagged = false;
-                    square.setFillColor(sf::Color(84, 84, 84, 255));
+                    tile.setFillColor(sf::Color(84, 84, 84, 255));
                     ++num_flags;
                 }
             }
@@ -63,30 +63,30 @@ class GridSquare : public sf::Drawable {
 
         void reveal(void){
             is_clicked = true;
-            square.setFillColor(sf::Color::White);
+            tile.setFillColor(sf::Color::White);
             if (is_mine)
-                square.setFillColor(sf::Color::Red);
+                tile.setFillColor(sf::Color::Red);
         }
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const {
             if (is_clicked){
-                target.draw(square);
+                target.draw(tile);
                 target.draw(text);
             }else{
-                target.draw(square);
+                target.draw(tile);
             }
         }
     
     private:
-        sf::RectangleShape square;
+        sf::RectangleShape tile;
         sf::Text text;
         sf::Font font;
 
-        void setup_square(void){
-            square.setSize(sf::Vector2f(box_size, box_size));
-            square.setFillColor(sf::Color(84, 84, 84, 255));
-            square.setOutlineThickness(2.f);
-            square.setOutlineColor(sf::Color::Black);
+        void setup_tile(void){
+            tile.setSize(sf::Vector2f(box_size, box_size));
+            tile.setFillColor(sf::Color(84, 84, 84, 255));
+            tile.setOutlineThickness(2.f);
+            tile.setOutlineColor(sf::Color::Black);
         }
             
         void setup_text(void){

@@ -2,41 +2,41 @@
 #include <iostream>
 #include <random>
 #include <sstream>
-#include "gameboard.h"
+#include "minesweeper.h"
 
 int main(int argc, char** argv){
 
-    Gameboard board("Easy");
-    board.set_board();
-    board.window->setKeyRepeatEnabled(false);
+    Minesweeper game("Easy");
+    game.set_board();
+    game.window->setKeyRepeatEnabled(false);
 
     sf::Event event;
 
-    while (board.window->isOpen()) {
-        while (board.window->pollEvent(event)) {
+    while (game.window->isOpen()) {
+        while (game.window->pollEvent(event)) {
             if (event.type == sf::Event::Closed)
-                board.window->close();
+                game.window->close();
             
-            if (event.type == sf::Event::MouseButtonPressed && !board.game_over){
+            if (event.type == sf::Event::MouseButtonPressed && !game.game_over){
                 if (event.mouseButton.button == sf::Mouse::Left)
-                    board.left_click(event);
+                    game.left_click(event);
                 if (event.mouseButton.button == sf::Mouse::Right)
-                    board.right_click(event);
+                    game.right_click(event);
             }
 
             if (event.type == sf::Event::KeyPressed){
                 if (event.key.code == sf::Keyboard::R){
                     printf("reset\n");
-                    board.reset();
+                    game.reset();
                 }
             }
         }
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && 
             sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
-            board.window->close();
+            game.window->close();
         
-        board.draw_board();
+        game.draw_board();
     }
 
     return 0;

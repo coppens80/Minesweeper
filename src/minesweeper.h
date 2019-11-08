@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 #include <random>
-#include "square.h"
+#include "tile.h"
 
-class Gameboard {
+class Minesweeper {
     // Data
     public:
         sf::RenderWindow *window;
@@ -20,15 +20,15 @@ class Gameboard {
         int num_flags;
         int tiles_cleared;
         std::string gamemode;
-        GridSquare cell;
-        std::vector<GridSquare> grid;
+        GameTile single_tile;
+        std::vector<GameTile> grid;
         sf::Text score_display, flag_display;
         sf::Font font;
         sf::Clock game_clock;
 
     // Methods
     public:
-        Gameboard(std::string mode) : gamemode(mode){
+        Minesweeper(std::string mode) : gamemode(mode){
             if (gamemode == "Easy"){
                 ncols = 9;
                 nrows = 9;
@@ -44,7 +44,7 @@ class Gameboard {
             }
             else
                 std::cout << "Invalid game mode" << std::endl;
-            window = new sf::RenderWindow(sf::VideoMode(cell.box_size*(ncols+2), cell.box_size*(nrows+3)), "Minesweepy");
+            window = new sf::RenderWindow(sf::VideoMode(single_tile.box_size*(ncols+2), single_tile.box_size*(nrows+3)), "My Shitty Minesweeper");
         }
 
         void set_board(void){
@@ -74,24 +74,24 @@ class Gameboard {
             window->clear();
             window->draw(score_display);
             window->draw(flag_display);
-            for(auto& square : grid)
-                window->draw(square);
+            for(auto& tile : grid)
+                window->draw(tile);
             window->display();
         }
 
         void left_click(const sf::Event& event) {
             int idx = 0;
-            for(auto& square : grid){
-                if(square.flagged || square.is_clicked){
+            for(auto& tile : grid){
+                if(tile.flagged || tile.is_clicked){
                     ++idx;
                     continue;
                 }
-                if(square.click(event)){
-                    if(square.is_mine)
+                if(tile.click(event)){
+                    if(tile.is_mine)
                         end_game();
                     else
                         ++tiles_cleared;
-                    if (square.val == 0)
+                    if (tile.val == 0)
                         reveal_neighbours(idx);
                     break;
                 }
@@ -102,16 +102,16 @@ class Gameboard {
         }
         
         void right_click(const sf::Event& event) {
-            for(auto& square : grid)
-                square.flag(event, num_flags);
+            for(auto& tile : grid)
+                tile.flag(event, num_flags);
         }
 
     private:
         void create_tiles(void){
             for(int row=0; row<nrows; row++){
                 for(int col=0; col<ncols; col++){
-                    grid.push_back(cell);
-                    grid[col + row * ncols].set_position((col+1)*cell.box_size, (row+2)*cell.box_size);
+                    grid.push_back(single_tile);
+                    grid[col + row * ncols].set_position((col+1)*single_tile.box_size, (row+2)*single_tile.box_size);
                 }
             }
         }
@@ -170,9 +170,9 @@ class Gameboard {
 
         void end_game(void){
             game_over = true;
-            for(auto& square : grid)
-                if(square.is_mine)
-                    square.reveal();
+            for(auto& tile : grid)
+                if(tile.is_mine)
+                    tile.reveal();
             std::cout << "Game Over :(" << std::endl;
             std::cout << "Press R to restart" << std::endl;
         }
@@ -190,11 +190,11 @@ class Gameboard {
             score_display.setFont(font);
             score_display.setCharacterSize(20);
             score_display.setFillColor(sf::Color::White);
-            score_display.setPosition(cell.box_size*(ncols-2), 12);
+            score_display.setPosition(single_tile.box_size*(ncols-2), 12);
             flag_display.setFont(font);
             flag_display.setCharacterSize(20);
             flag_display.setFillColor(sf::Color::White);
-            flag_display.setPosition(cell.box_size*3, 12);
+            flag_display.setPosition(single_tile.box_size*3, 12);
         }
 };
 

@@ -25,10 +25,10 @@ DEPS = $(shell find . -name '*.hpp' -or -name '*.h' -or -name '*.hh')
 .PHONY: all
 all: $(TARGETS)
 
-test: minesweepy.o
+test: main.o
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
-minesweepy.o:  $(DEPS)
+main.o:  $(DEPS)
 
 .PHONY: clean
 clean:
