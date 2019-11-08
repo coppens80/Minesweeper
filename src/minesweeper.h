@@ -10,7 +10,7 @@
 class Minesweeper {
     // Data
     public:
-        sf::RenderWindow *window;
+        std::pair<float,float> window_size;
         int score;
         bool game_over = false;
     private:
@@ -44,7 +44,9 @@ class Minesweeper {
             }
             else
                 std::cout << "Invalid game mode" << std::endl;
-            window = new sf::RenderWindow(sf::VideoMode(single_tile.box_size*(ncols+2), single_tile.box_size*(nrows+3)), "My Shitty Minesweeper");
+
+            window_size = std::make_pair(single_tile.box_size*(ncols+2), single_tile.box_size*(nrows+3));
+            set_board();
         }
 
         void set_board(void){
@@ -65,18 +67,18 @@ class Minesweeper {
             set_board();
         }
 
-        void draw_board(void){
+        void draw_board(sf::RenderWindow &window){
             if (!game_over)
                 score = int(game_clock.getElapsedTime().asSeconds());
             score_display.setString(std::to_string(score).c_str());
             flag_display.setString(std::to_string(num_flags).c_str());
 
-            window->clear();
-            window->draw(score_display);
-            window->draw(flag_display);
+            window.clear();
+            window.draw(score_display);
+            window.draw(flag_display);
             for(auto& tile : grid)
-                window->draw(tile);
-            window->display();
+                window.draw(tile);
+            window.display();
         }
 
         void left_click(const sf::Event& event) {

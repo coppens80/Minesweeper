@@ -5,17 +5,19 @@
 #include "minesweeper.h"
 
 int main(int argc, char** argv){
-
+    
     Minesweeper game("Easy");
-    game.set_board();
-    game.window->setKeyRepeatEnabled(false);
+    auto [width, height] = game.window_size;
 
+    sf::RenderWindow window(sf::VideoMode(width, height), "My Shitty Minesweeper");
+    window.setKeyRepeatEnabled(false);
+    
     sf::Event event;
 
-    while (game.window->isOpen()) {
-        while (game.window->pollEvent(event)) {
+    while (window.isOpen()) {
+        while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
-                game.window->close();
+                window.close();
             
             if (event.type == sf::Event::MouseButtonPressed && !game.game_over){
                 if (event.mouseButton.button == sf::Mouse::Left)
@@ -34,9 +36,9 @@ int main(int argc, char** argv){
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && 
             sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
-            game.window->close();
+            window.close();
         
-        game.draw_board();
+        game.draw_board(window);
     }
 
     return 0;
