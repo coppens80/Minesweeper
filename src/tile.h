@@ -1,3 +1,5 @@
+//SRC: J.Coppens 2019
+
 #ifndef SQUARE
 #define SQUARE
 
