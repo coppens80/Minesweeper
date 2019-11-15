@@ -5,10 +5,12 @@
 #include <random>
 #include <sstream>
 #include "minesweeper.h"
+#include "AI.h"
 
 int main(int argc, char** argv){
     
-    Minesweeper game("Hard");
+    Minesweeper game("Easy");
+    MinesweeperAI solver(game);
     auto [width, height] = game.window_size;
     
     sf::RenderWindow window(sf::VideoMode(width, height), "My Shitty Minesweeper");
@@ -33,6 +35,9 @@ int main(int argc, char** argv){
             }
 
             if (event.type == sf::Event::KeyPressed){
+                if (event.key.code == sf::Keyboard::H){
+                    solver.read_board(game.grid);
+                }
                 if (event.key.code == sf::Keyboard::R){
                     printf("reset\n");
                     game.reset();

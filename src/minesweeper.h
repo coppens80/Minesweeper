@@ -16,19 +16,19 @@ class Minesweeper {
         int score;
         bool game_over = false;
         bool game_won = false;
-    private:
         int ncols;
         int nrows;
         int num_mines;
         int num_flags;
+        float s;
+        std::vector<GameTile> grid;
+    private:
         int tiles_cleared;
         std::string gamemode;
         GameTile single_tile;
-        std::vector<GameTile> grid;
         sf::Text score_display, flag_display;
         sf::Font font;
         sf::Clock game_clock;
-        float s;
         int idx_x, idx_y, idx;
 
     // Methods
