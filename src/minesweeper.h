@@ -119,6 +119,8 @@ class Minesweeper {
                 return;
             idx = idx_x + idx_y * ncols;
             
+            if (grid[idx].is_clicked)
+                return;
             grid[idx].flag(num_flags);
         }
 
