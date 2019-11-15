@@ -8,9 +8,9 @@
 
 int main(int argc, char** argv){
     
-    Minesweeper game("Medium");
+    Minesweeper game("Hard");
     auto [width, height] = game.window_size;
-
+    
     sf::RenderWindow window(sf::VideoMode(width, height), "My Shitty Minesweeper");
     window.setKeyRepeatEnabled(false);
     
@@ -19,19 +19,17 @@ int main(int argc, char** argv){
     int n = 0;
 
     while (window.isOpen()) {
-        
-        game.draw_board(window);
-        
+         
         while (window.pollEvent(event)) {
-            
+
             if (event.type == sf::Event::Closed)
                 window.close();
             
             if (event.type == sf::Event::MouseButtonPressed && !game.game_over){
                 if (event.mouseButton.button == sf::Mouse::Left)
-                    game.left_click(event);
+                    game.left_click(event.mouseButton.x, event.mouseButton.y);
                 if (event.mouseButton.button == sf::Mouse::Right)
-                    game.right_click(event);
+                    game.right_click(event.mouseButton.x, event.mouseButton.y);
             }
 
             if (event.type == sf::Event::KeyPressed){
@@ -43,13 +41,13 @@ int main(int argc, char** argv){
                 }
             }
         
-            game.draw_board(window);
         }
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && 
             sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
             window.close();
 
+        game.draw_board(window);
         n++;
     }
 

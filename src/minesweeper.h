@@ -88,9 +88,9 @@ class Minesweeper {
             window.display();
         }
 
-        void left_click(const sf::Event& event) {
-            idx_x = int(event.mouseButton.x/s + 1) - 2;
-            idx_y = int(event.mouseButton.y/s + 1) - 3;
+        void left_click(float mouse_x, float mouse_y) {
+            idx_x = int(mouse_x/s + 1) - 2;
+            idx_y = int(mouse_y/s + 1) - 3;
             if (idx_x < 0 || idx_x >= ncols || idx_y < 0 || idx_y >= nrows)
                 return;
             idx = idx_x + idx_y * ncols;
@@ -112,9 +112,9 @@ class Minesweeper {
                 win_game();
         }
         
-        void right_click(const sf::Event& event) {
-            idx_x = int(event.mouseButton.x/s + 1) - 2;
-            idx_y = int(event.mouseButton.y/s + 1) - 3;
+        void right_click(float mouse_x, float mouse_y) {
+            idx_x = int(mouse_x/s + 1) - 2;
+            idx_y = int(mouse_y/s + 1) - 3;
             if (idx_x < 0 || idx_x >= ncols || idx_y < 0 || idx_y >= nrows)
                 return;
             idx = idx_x + idx_y * ncols;
@@ -127,7 +127,7 @@ class Minesweeper {
             for(int row=0; row<nrows; row++){
                 for(int col=0; col<ncols; col++){
                     grid.push_back(single_tile);
-                    grid[col + row * ncols].set_position((col+1)*single_tile.size, (row+2)*single_tile.size);
+                    grid[col + row * ncols].set_position((col+1)*s, (row+2)*s);
                 }
             }
         }
@@ -208,11 +208,11 @@ class Minesweeper {
             score_display.setFont(font);
             score_display.setCharacterSize(20);
             score_display.setFillColor(sf::Color::White);
-            score_display.setPosition(single_tile.size*(ncols-2), 12);
+            score_display.setPosition(s*(ncols-2), 12);
             flag_display.setFont(font);
             flag_display.setCharacterSize(20);
             flag_display.setFillColor(sf::Color::White);
-            flag_display.setPosition(single_tile.size*3, 12);
+            flag_display.setPosition(s*3, 12);
         }
 };
 
