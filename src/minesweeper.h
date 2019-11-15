@@ -48,6 +48,7 @@ class Minesweeper {
                 std::cout << "Invalid game mode" << std::endl;
 
             window_size = std::make_pair(single_tile.box_size*(ncols+2), single_tile.box_size*(nrows+3));
+            setup_score_display();
             set_board();
         }
 
@@ -59,7 +60,6 @@ class Minesweeper {
             create_tiles();
             set_mines();
             set_neighbour_values();
-            setup_score_display();
             game_clock.restart();
         }
 
@@ -74,7 +74,7 @@ class Minesweeper {
                 score = int(game_clock.getElapsedTime().asSeconds());
             score_display.setString(std::to_string(score).c_str());
             flag_display.setString(std::to_string(num_flags).c_str());
-
+            
             window.clear();
             window.draw(score_display);
             window.draw(flag_display);
