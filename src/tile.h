@@ -8,7 +8,7 @@
 
 class GameTile : public sf::Drawable {
     public:    
-        float box_size = 25.f;
+        float size = 25.f;
         int val = 0;
         bool is_mine = false;
         bool flagged = false;
@@ -40,26 +40,20 @@ class GameTile : public sf::Drawable {
             text.setFillColor(sf::Color::Black);
         }
 
-        bool click(const sf::Event event) {
-            if(tile.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)){
-                is_clicked = true;
-                tile.setFillColor(sf::Color::White);
-                return true;
-            }
-            return false;
+        void click(void) {
+            is_clicked = true;
+            tile.setFillColor(sf::Color::White);
         }
         
-        void flag(const sf::Event event, int &num_flags) {
-            if(tile.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y) && !is_clicked){
-                if (!flagged && num_flags > 0){
-                    flagged = true;
-                    tile.setFillColor(sf::Color::Blue);
-                    --num_flags;
-                }else if (flagged){
-                    flagged = false;
-                    tile.setFillColor(sf::Color(84, 84, 84, 255));
-                    ++num_flags;
-                }
+        void flag(int &num_flags) {
+            if (!flagged){
+                flagged = true;
+                tile.setFillColor(sf::Color::Blue);
+                --num_flags;
+            }else{
+                flagged = false;
+                tile.setFillColor(sf::Color(84, 84, 84, 255));
+                ++num_flags;
             }
         }
 
@@ -85,7 +79,7 @@ class GameTile : public sf::Drawable {
         sf::Font font;
 
         void setup_tile(void){
-            tile.setSize(sf::Vector2f(box_size, box_size));
+            tile.setSize(sf::Vector2f(size, size));
             tile.setFillColor(sf::Color(84, 84, 84, 255));
             tile.setOutlineThickness(2.f);
             tile.setOutlineColor(sf::Color::Black);

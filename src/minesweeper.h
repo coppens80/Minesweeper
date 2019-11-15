@@ -15,6 +15,7 @@ class Minesweeper {
         std::pair<float,float> window_size;
         int score;
         bool game_over = false;
+        bool game_won = false;
     private:
         int ncols;
         int nrows;
@@ -27,6 +28,8 @@ class Minesweeper {
         sf::Text score_display, flag_display;
         sf::Font font;
         sf::Clock game_clock;
+        float s;
+        int idx_x, idx_y, idx;
 
     // Methods
     public:
@@ -47,7 +50,8 @@ class Minesweeper {
             else
                 std::cout << "Invalid game mode" << std::endl;
 
-            window_size = std::make_pair(single_tile.box_size*(ncols+2), single_tile.box_size*(nrows+3));
+            s = single_tile.size;
+            window_size = std::make_pair(s*(ncols+2), s*(nrows+3));
             setup_score_display();
             set_board();
         }
@@ -66,6 +70,7 @@ class Minesweeper {
         void reset(void){
             grid.clear();
             game_over = false;
+            game_won = false;
             set_board();
         }
 
@@ -84,30 +89,37 @@ class Minesweeper {
         }
 
         void left_click(const sf::Event& event) {
-            int idx = 0;
-            for(auto& tile : grid){
-                if(tile.flagged || tile.is_clicked){
-                    ++idx;
-                    continue;
-                }
-                if(tile.click(event)){
-                    if(tile.is_mine)
-                        end_game();
-                    else
-                        ++tiles_cleared;
-                    if (tile.val == 0)
-                        reveal_neighbours(idx);
-                    break;
-                }
-                ++idx;
-            }
+            idx_x = int(event.mouseButton.x/s + 1) - 2;
+            idx_y = int(event.mouseButton.y/s + 1) - 3;
+            if (idx_x < 0 || idx_x >= ncols || idx_y < 0 || idx_y >= nrows)
+                return;
+            idx = idx_x + idx_y * ncols;
+            
+            if(grid[idx].flagged || grid[idx].is_clicked)
+                return;
+
+            grid[idx].click();
+            
+            if(grid[idx].is_mine)
+                end_game();
+            else
+                ++tiles_cleared;
+            
+            if (grid[idx].val == 0)
+                reveal_neighbours(idx);
+            
             if (tiles_cleared == nrows * ncols - num_mines)
                 win_game();
         }
         
         void right_click(const sf::Event& event) {
-            for(auto& tile : grid)
-                tile.flag(event, num_flags);
+            idx_x = int(event.mouseButton.x/s + 1) - 2;
+            idx_y = int(event.mouseButton.y/s + 1) - 3;
+            if (idx_x < 0 || idx_x >= ncols || idx_y < 0 || idx_y >= nrows)
+                return;
+            idx = idx_x + idx_y * ncols;
+            
+            grid[idx].flag(num_flags);
         }
 
     private:
@@ -115,7 +127,7 @@ class Minesweeper {
             for(int row=0; row<nrows; row++){
                 for(int col=0; col<ncols; col++){
                     grid.push_back(single_tile);
-                    grid[col + row * ncols].set_position((col+1)*single_tile.box_size, (row+2)*single_tile.box_size);
+                    grid[col + row * ncols].set_position((col+1)*single_tile.size, (row+2)*single_tile.size);
                 }
             }
         }
@@ -174,6 +186,7 @@ class Minesweeper {
 
         void end_game(void){
             game_over = true;
+            game_won = false;
             for(auto& tile : grid)
                 if(tile.is_mine)
                     tile.reveal();
@@ -183,6 +196,7 @@ class Minesweeper {
 
         void win_game(void){
             game_over = true;
+            game_won = true;
             std::cout << "You win!" << std::endl;
             std::cout << "Score: " << score << std::endl;
             std::cout << "Press R to restart" << std::endl;
@@ -194,11 +208,11 @@ class Minesweeper {
             score_display.setFont(font);
             score_display.setCharacterSize(20);
             score_display.setFillColor(sf::Color::White);
-            score_display.setPosition(single_tile.box_size*(ncols-2), 12);
+            score_display.setPosition(single_tile.size*(ncols-2), 12);
             flag_display.setFont(font);
             flag_display.setCharacterSize(20);
             flag_display.setFillColor(sf::Color::White);
-            flag_display.setPosition(single_tile.box_size*3, 12);
+            flag_display.setPosition(single_tile.size*3, 12);
         }
 };
 
