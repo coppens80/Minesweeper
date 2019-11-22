@@ -12,7 +12,7 @@ int a = 0, b = 0;
 int main(int argc, char** argv){
     
     Minesweeper game("Easy");
-    MinesweeperAI solver(game);
+    MinesweeperAI solver(&game);
     auto [width, height] = game.window_size;
     
     sf::RenderWindow window(sf::VideoMode(width, height), "My Shitty Minesweeper");
@@ -38,15 +38,12 @@ int main(int argc, char** argv){
             }
 
             if (event.type == sf::Event::KeyPressed){
-                if (event.key.code == sf::Keyboard::H){
-                    solver.read_board(game.grid);
-                    std::cout << std::endl;
-                }
-                if (event.key.code == sf::Keyboard::C){
-                    auto [x, y] = solver.click_tile(a++, b++);
-                    game.left_click(x, y);
+                if (event.key.code == sf::Keyboard::N){
+                    solver.read_board();
+                    solver.compute();
                 }
                 if (event.key.code == sf::Keyboard::R){
+                    a = b = 0;
                     printf("reset\n");
                     game.reset();
                     std::cout << "Average frame time: " << timer.getElapsedTime().asSeconds() * 1000 / n << std::endl;
