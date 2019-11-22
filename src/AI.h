@@ -43,12 +43,12 @@ class MinesweeperAI {
             print_vals();
         }
 
-        std::pair<float,float> click_tile(int idx, int idy){
-            std::cout << "index: " << idy << " " << idx << std::endl;
+        std::tuple<float,float,bool> click_tile(int idx, int idy, bool flag){
+            //std::cout << "index: " << idy << " " << idx << std::endl;
             x = (idx + 1.5) * tilesize;
             y = (idy + 2.5) * tilesize;
-            std::cout << "coords: " <<  y << " " << x << std::endl;
-            return std::pair(x,y);
+            //std::cout << "coords: " <<  y << " " << x << std::endl;
+            return std::tuple(x,y,flag);
         }
 
         /* void step(void){ */
