@@ -6,7 +6,6 @@
 #include <vector>
 #include "minesweeper.h"
 #include "tile.h"
-
 #include <iomanip>
 
 class MinesweeperAI {
@@ -19,6 +18,7 @@ class MinesweeperAI {
         float tilesize; 
     private:
         std::vector<int> board_vals;
+        float x, y;
 
     // Methods
     public:
@@ -44,8 +44,12 @@ class MinesweeperAI {
 
         }
 
-        void click_tile(void){
-            std::cout << ncols << " " << nrows << std::endl;
+        std::pair<float,float> click_tile(int idx, int idy){
+            std::cout << "index: " << idy << " " << idx << std::endl;
+            x = (idx + 1.5) * tilesize;
+            y = (idy + 2.5) * tilesize;
+            std::cout << "coords: " <<  y << " " << x << std::endl;
+            return std::pair(x,y);
         }
 
     private:

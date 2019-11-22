@@ -7,6 +7,8 @@
 #include "minesweeper.h"
 #include "AI.h"
 
+int a = 0, b = 0;
+
 int main(int argc, char** argv){
     
     Minesweeper game("Easy");
@@ -28,6 +30,7 @@ int main(int argc, char** argv){
                 window.close();
             
             if (event.type == sf::Event::MouseButtonPressed && !game.game_over){
+                std::cout << event.mouseButton.y << " " << event.mouseButton.x << std::endl;
                 if (event.mouseButton.button == sf::Mouse::Left)
                     game.left_click(event.mouseButton.x, event.mouseButton.y);
                 if (event.mouseButton.button == sf::Mouse::Right)
@@ -37,6 +40,11 @@ int main(int argc, char** argv){
             if (event.type == sf::Event::KeyPressed){
                 if (event.key.code == sf::Keyboard::H){
                     solver.read_board(game.grid);
+                    std::cout << std::endl;
+                }
+                if (event.key.code == sf::Keyboard::C){
+                    auto [x, y] = solver.click_tile(a++, b++);
+                    game.left_click(x, y);
                 }
                 if (event.key.code == sf::Keyboard::R){
                     printf("reset\n");
