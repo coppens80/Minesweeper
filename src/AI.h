@@ -17,7 +17,7 @@ class MinesweeperAI {
         int num_flags;
         float tilesize; 
     private:
-        std::vector<int> board_vals;
+        std::vector<std::vector<int>> board_vals;
         float x, y;
 
     // Methods
@@ -28,20 +28,19 @@ class MinesweeperAI {
             num_mines = game.num_mines;
             num_flags = game.num_flags;
             tilesize = game.s;
-            board_vals = std::vector<int>(nrows*ncols,-1);
+            board_vals = std::vector<std::vector<int>>(nrows, std::vector<int>(ncols,-1));
         }
 
         void read_board(std::vector<GameTile> grid){
             for (int row=0; row<nrows; row++){
                 for (int col=0; col<ncols; col++){
                     if (grid[col + row * ncols].is_clicked)
-                        board_vals[col + row * ncols] = grid[col + row * ncols].val;
+                        board_vals[row][col] = grid[col + row * ncols].val;
                     else if (grid[col + row * ncols].flagged)
-                        board_vals[col + row * ncols] = -2;
+                        board_vals[row][col] = -2;
                 }
             }
             print_vals();
-
         }
 
         std::pair<float,float> click_tile(int idx, int idy){
@@ -52,6 +51,12 @@ class MinesweeperAI {
             return std::pair(x,y);
         }
 
+        /* void step(void){ */
+        /*     read_board(); */
+        /*     compute(); */
+        /*     click_tile(); */
+        /* } */
+
     private:
         void compute(void){
             return;
@@ -60,11 +65,11 @@ class MinesweeperAI {
         void print_vals(void){
             for (int row=0; row<nrows; row++){
                 for (int col=0; col<ncols; col++){
-                    std::cout << std::setw(2) << board_vals[col + row * ncols] << " ";
+                    std::cout << std::setw(2) << board_vals[row][col] << " ";
                 }
                 std::cout << std::endl;
             }
-
+            std::cout << std::endl;
         }
 };
 
