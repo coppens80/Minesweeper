@@ -11,13 +11,17 @@ override CXXFLAGS += \
     -O3 \
     -std=c++17 \
     -fpermissive \
-    -Wall 
+    -$(DEBUG)
 
 override LDFLAGS += \
 	-lsfml-graphics \
 	-lsfml-window \
 	-lsfml-system
 
+DEBUG += g \
+		-Wextra \
+		-Wall 
+		
 TARGETS = test
 
 DEPS = $(shell find . -name '*.hpp' -or -name '*.h' -or -name '*.hh') 
