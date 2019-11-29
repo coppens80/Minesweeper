@@ -1,4 +1,4 @@
-// SRC: J.Coppens 2019
+//SRC: J.Coppens 2019
 
 #ifndef SWEEPERAI
 #define SWEEPERAI
@@ -18,6 +18,7 @@ class MinesweeperAI {
         float tilesize; 
     private:
         std::vector<std::vector<int>> board_vals;
+        std::vector<std::vector<int>> border;
         float x, y;
         Minesweeper *game;
 
@@ -44,14 +45,17 @@ class MinesweeperAI {
                         board_vals[row][col] = -1;
                 }
             }
+            border.clear();
+            get_border_tiles();
+            
             /* print_vals(); */
+            /* print_border(); */
         }
 
         void click_tile(int idy, int idx, bool flag){
             x = (idx + 1.5) * tilesize;
             y = (idy + 2.5) * tilesize;
             if (flag && !game->grid[idx + idy * ncols].flagged){
-                /* std::cout << "flag " << y << " " << x << std::endl; */
                 game->right_click(x, y);
             }else if (!flag)
                 game->left_click(x, y);
@@ -64,14 +68,18 @@ class MinesweeperAI {
         /* } */
 
         void compute(void){
+            int basic_tests_passed = 0;
             for (int row=0; row<nrows; row++){
                 for (int col=0; col<ncols; col++){
                     if (board_vals[row][col] > 0){
-                        basic_1s_rule(row, col);
-                        basic_1s_rule2(row, col);
+                        basic_tests_passed += basic_hidden_neighbour_rule(row, col);
+                        basic_tests_passed += basic_flag_rule(row, col);
                     }
                 }
             }
+            std::cout << "Num passed: " << basic_tests_passed << std::endl;
+            if (basic_tests_passed == 0)
+                std::cout << "All basic tests failed\n";
         }
 
 
@@ -86,7 +94,41 @@ class MinesweeperAI {
             std::cout << std::endl;
         }
 
-        void basic_1s_rule(int i, int j){
+        void print_border(void){
+            for (int i=0; i<int(border.size()); i++)
+                std::cout << border[i][0] << " " << border[i][1] << " " << border[i][2] << std::endl;
+        }
+
+        void get_border_tiles(void){
+            bool oU, oD, oL, oR, isBorder;
+            for (int i=0; i<nrows; i++){
+                for (int j=0; j<ncols; j++){
+                    if (board_vals[i][j] < 0)
+                        continue;
+                    oU = false, oD = false,  oL =false, oR = false;
+                    oU = (i == 0);
+                    oD = (i == nrows-1);
+                    oL = (j == 0);
+                    oR = (j == ncols-1);
+                    isBorder = false;
+                    
+                    if(!oU && board_vals[i-1][j]==-1) isBorder = true;
+                    if(!oD && board_vals[i+1][j]==-1) isBorder = true;
+                    if(!oL && board_vals[i][j-1]==-1) isBorder = true;
+                    if(!oR && board_vals[i][j+1]==-1) isBorder = true;
+                    
+                    if(!oU && !oL && board_vals[i-1][j-1]==-1) isBorder = true;
+                    if(!oU && !oR && board_vals[i-1][j+1]==-1) isBorder = true;
+                    if(!oD && !oL && board_vals[i+1][j-1]==-1) isBorder = true;
+                    if(!oD && !oR && board_vals[i+1][j+1]==-1) isBorder = true; 
+                    
+                    if(isBorder)
+                        border.push_back(std::vector<int> {i,j,board_vals[i][j]});
+                }
+            }
+        }
+
+        int basic_hidden_neighbour_rule(int i, int j){
             int n = 0;
             bool oU = false, oD = false,  oL =false, oR = false;
             oU = (i == 0);
@@ -105,7 +147,6 @@ class MinesweeperAI {
             if(!oD && !oR && board_vals[i+1][j+1]<0) n++; 
             
             if(n == board_vals[i][j]){
-                /* std::cout << i << " " << j << std::endl; */
                 if(!oU && board_vals[i-1][j]==-1) click_tile(i-1,j,true);
                 if(!oD && board_vals[i+1][j]==-1) click_tile(i+1,j,true);
                 if(!oL && board_vals[i][j-1]==-1) click_tile(i,j-1,true);
@@ -114,10 +155,12 @@ class MinesweeperAI {
                 if(!oU && !oR && board_vals[i-1][j+1]==-1) click_tile(i-1,j+1,true);
                 if(!oD && !oL && board_vals[i+1][j-1]==-1) click_tile(i+1,j-1,true);
                 if(!oD && !oR && board_vals[i+1][j+1]==-1) click_tile(i+1,j+1,true);
-            }
+                return 1;
+            }else
+                return 0;
         }
         
-        void basic_1s_rule2(int i, int j){
+        int basic_flag_rule(int i, int j){
             int n = 0;
             bool oU = false, oD = false,  oL =false, oR = false;
             oU = (i == 0);
@@ -136,7 +179,6 @@ class MinesweeperAI {
             if(!oD && !oR && board_vals[i+1][j+1]==-2) n++; 
             
             if(n == board_vals[i][j]){
-                /* std::cout << i << " " << j << std::endl; */
                 if(!oU && board_vals[i-1][j]==-1) click_tile(i-1,j,false);
                 if(!oD && board_vals[i+1][j]==-1) click_tile(i+1,j,false);
                 if(!oL && board_vals[i][j-1]==-1) click_tile(i,j-1,false);
@@ -145,8 +187,12 @@ class MinesweeperAI {
                 if(!oU && !oR && board_vals[i-1][j+1]==-1) click_tile(i-1,j+1,false);
                 if(!oD && !oL && board_vals[i+1][j-1]==-1) click_tile(i+1,j-1,false);
                 if(!oD && !oR && board_vals[i+1][j+1]==-1) click_tile(i+1,j+1,false);
-            }
+                return 1;
+            }else
+                return 0;
         }
+
+
 };
 
 #endif
