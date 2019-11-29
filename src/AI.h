@@ -52,15 +52,6 @@ class MinesweeperAI {
             /* print_border(); */
         }
 
-        void click_tile(int idy, int idx, bool flag){
-            x = (idx + 1.5) * tilesize;
-            y = (idy + 2.5) * tilesize;
-            if (flag && !game->grid[idx + idy * ncols].flagged){
-                game->right_click(x, y);
-            }else if (!flag)
-                game->left_click(x, y);
-        }
-
         /* void step(Minesweeper & game){ */
         /*     read_board(); */
         /*     compute(); */
@@ -84,6 +75,19 @@ class MinesweeperAI {
 
 
     private:
+        void click_tile(int idy, int idx){
+            x = (idx + 1.5) * tilesize;
+            y = (idy + 2.5) * tilesize;
+            game->left_click(x, y);
+        }
+        
+        void flag_tile(int idy, int idx){
+            x = (idx + 1.5) * tilesize;
+            y = (idy + 2.5) * tilesize;
+            if (!game->grid[idx + idy * ncols].flagged)
+                game->right_click(x, y);
+        }
+
         void print_vals(void){
             for (int row=0; row<nrows; row++){
                 for (int col=0; col<ncols; col++){
@@ -147,14 +151,14 @@ class MinesweeperAI {
             if(!oD && !oR && board_vals[i+1][j+1]<0) n++; 
             
             if(n == board_vals[i][j]){
-                if(!oU && board_vals[i-1][j]==-1) click_tile(i-1,j,true);
-                if(!oD && board_vals[i+1][j]==-1) click_tile(i+1,j,true);
-                if(!oL && board_vals[i][j-1]==-1) click_tile(i,j-1,true);
-                if(!oR && board_vals[i][j+1]==-1) click_tile(i,j+1,true); 
-                if(!oU && !oL && board_vals[i-1][j-1]==-1) click_tile(i-1,j-1,true);
-                if(!oU && !oR && board_vals[i-1][j+1]==-1) click_tile(i-1,j+1,true);
-                if(!oD && !oL && board_vals[i+1][j-1]==-1) click_tile(i+1,j-1,true);
-                if(!oD && !oR && board_vals[i+1][j+1]==-1) click_tile(i+1,j+1,true);
+                if(!oU && board_vals[i-1][j]==-1) flag_tile(i-1,j);
+                if(!oD && board_vals[i+1][j]==-1) flag_tile(i+1,j);
+                if(!oL && board_vals[i][j-1]==-1) flag_tile(i,j-1);
+                if(!oR && board_vals[i][j+1]==-1) flag_tile(i,j+1); 
+                if(!oU && !oL && board_vals[i-1][j-1]==-1) flag_tile(i-1,j-1);
+                if(!oU && !oR && board_vals[i-1][j+1]==-1) flag_tile(i-1,j+1);
+                if(!oD && !oL && board_vals[i+1][j-1]==-1) flag_tile(i+1,j-1);
+                if(!oD && !oR && board_vals[i+1][j+1]==-1) flag_tile(i+1,j+1);
                 return 1;
             }else
                 return 0;
@@ -179,14 +183,14 @@ class MinesweeperAI {
             if(!oD && !oR && board_vals[i+1][j+1]==-2) n++; 
             
             if(n == board_vals[i][j]){
-                if(!oU && board_vals[i-1][j]==-1) click_tile(i-1,j,false);
-                if(!oD && board_vals[i+1][j]==-1) click_tile(i+1,j,false);
-                if(!oL && board_vals[i][j-1]==-1) click_tile(i,j-1,false);
-                if(!oR && board_vals[i][j+1]==-1) click_tile(i,j+1,false); 
-                if(!oU && !oL && board_vals[i-1][j-1]==-1) click_tile(i-1,j-1,false);
-                if(!oU && !oR && board_vals[i-1][j+1]==-1) click_tile(i-1,j+1,false);
-                if(!oD && !oL && board_vals[i+1][j-1]==-1) click_tile(i+1,j-1,false);
-                if(!oD && !oR && board_vals[i+1][j+1]==-1) click_tile(i+1,j+1,false);
+                if(!oU && board_vals[i-1][j]==-1) click_tile(i-1,j);
+                if(!oD && board_vals[i+1][j]==-1) click_tile(i+1,j);
+                if(!oL && board_vals[i][j-1]==-1) click_tile(i,j-1);
+                if(!oR && board_vals[i][j+1]==-1) click_tile(i,j+1); 
+                if(!oU && !oL && board_vals[i-1][j-1]==-1) click_tile(i-1,j-1);
+                if(!oU && !oR && board_vals[i-1][j+1]==-1) click_tile(i-1,j+1);
+                if(!oD && !oL && board_vals[i+1][j-1]==-1) click_tile(i+1,j-1);
+                if(!oD && !oR && board_vals[i+1][j+1]==-1) click_tile(i+1,j+1);
                 return 1;
             }else
                 return 0;
