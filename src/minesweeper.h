@@ -56,22 +56,15 @@ class Minesweeper {
             set_board();
         }
 
-        void set_board(void){
-            std::cout << "Game mode: " << gamemode << std::endl;
-            num_flags = num_mines;
-            tiles_cleared = 0;
-            grid.reserve(ncols * nrows);
-            create_tiles();
-            set_mines();
-            set_neighbour_values();
-            game_clock.restart();
-        }
-
         void reset(void){
             grid.clear();
             game_over = false;
             game_won = false;
             set_board();
+            int m = 0;
+            for(auto& tile : grid)
+                if (tile.is_mine)
+                    m++;
         }
 
         void draw_board(sf::RenderWindow &window){
@@ -125,6 +118,17 @@ class Minesweeper {
         }
 
     private:
+        void set_board(void){
+            std::cout << "Game mode: " << gamemode << std::endl;
+            num_flags = num_mines;
+            tiles_cleared = 0;
+            grid.reserve(ncols * nrows);
+            create_tiles();
+            set_mines();
+            set_neighbour_values();
+            game_clock.restart();
+        }
+
         void create_tiles(void){
             for(int row=0; row<nrows; row++){
                 for(int col=0; col<ncols; col++){
@@ -137,9 +141,17 @@ class Minesweeper {
         void set_mines(void){
             std::random_device rd;
             std::mt19937 generator(rd());
-            std::uniform_int_distribution<int> mine_idx(0, ncols * nrows);
-            for (int i=0; i<num_mines; i++)
-                grid[mine_idx(generator)].create_mine();
+            std::uniform_int_distribution<int> mine_idx(0, ncols * nrows - 1);
+            int count = 0, idx;
+            while (count < num_mines){
+                idx = mine_idx(generator);
+                if (grid[idx].is_mine)
+                    continue;
+                else{
+                    grid[idx].create_mine();
+                    count++;
+                }
+            }
         }
 
         void set_neighbour_values(void){
