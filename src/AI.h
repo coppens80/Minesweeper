@@ -68,17 +68,17 @@ class MinesweeperAI {
         /* } */
 
         void compute(void){
-            int basic_tests_passed = 0;
-            for (int row=0; row<nrows; row++){
-                for (int col=0; col<ncols; col++){
-                    if (board_vals[row][col] > 0){
-                        basic_tests_passed += basic_hidden_neighbour_rule(row, col);
-                        basic_tests_passed += basic_flag_rule(row, col);
-                    }
+            int passed = 0;
+            for (int i=0; i<int(border.size()); i++){
+                int row = border[i][0];
+                int col = border[i][1];
+                if (board_vals[row][col] > 0){
+                    passed += basic_hidden_neighbour_rule(row, col);
+                    passed += basic_flag_rule(row, col);
                 }
             }
-            std::cout << "Num passed: " << basic_tests_passed << std::endl;
-            if (basic_tests_passed == 0)
+            
+            if (passed == 0)
                 std::cout << "All basic tests failed\n";
         }
 
