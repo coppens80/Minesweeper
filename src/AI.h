@@ -9,10 +9,13 @@
 #include <iomanip>
 
 struct Tile {
+    int row;
+    int col;
     int val = -1;
     bool hidden = true;
-    bool isBorder = false;
+    bool isBorderNum = false;
     bool flagged = false;
+    std::vector<Tile*> neighbours;
 };
 
 class MinesweeperAI {
@@ -45,6 +48,8 @@ class MinesweeperAI {
             for (int row=0; row<nrows; row++){
                 for (int col=0; col<ncols; col++){
                     board[row][col] = default_tile;
+                    board[row][col].row = row;
+                    board[row][col].col = col;
                     if (game->grid[col + row * ncols].is_clicked){
                         board[row][col].val = game->grid[col + row * ncols].val;
                         board[row][col].hidden = false;
@@ -56,7 +61,27 @@ class MinesweeperAI {
                     }
                 }
             }
-            get_border_tiles();
+            for (int i=0; i<nrows; i++){
+                for (int j=0; j<ncols; j++){
+                    bool oU = false, oD = false,  oL =false, oR = false;
+                    oU = (i == 0);
+                    oD = (i == nrows-1);
+                    oL = (j == 0);
+                    oR = (j == ncols-1);
+                    
+                    if(!oU) board[i][j].neighbours.push_back(&board[i-1][j]);
+                    if(!oD) board[i][j].neighbours.push_back(&board[i+1][j]);
+                    if(!oL) board[i][j].neighbours.push_back(&board[i][j-1]);
+                    if(!oR) board[i][j].neighbours.push_back(&board[i][j+1]);
+                    
+                    if(!oU && !oL) board[i][j].neighbours.push_back(&board[i-1][j-1]);
+                    if(!oU && !oR) board[i][j].neighbours.push_back(&board[i-1][j+1]);
+                    if(!oD && !oL) board[i][j].neighbours.push_back(&board[i+1][j-1]);
+                    if(!oD && !oR) board[i][j].neighbours.push_back(&board[i+1][j+1]); 
+                }
+            }
+
+            find_border_numbers();
             
             /* print_vals(); */
             /* print_border(); */
@@ -72,7 +97,7 @@ class MinesweeperAI {
             int passed = 0;
             for (int row=0; row<nrows; row++){
                 for (int col=0; col<ncols; col++){
-                    if (!board[row][col].hidden && board[row][col].isBorder){
+                    if (!board[row][col].hidden && board[row][col].isBorderNum){
                         passed += basic_hidden_neighbour_rule(row, col);
                         passed += basic_flag_rule(row, col);
                     }
@@ -89,6 +114,7 @@ class MinesweeperAI {
             x = (idx + 1.5) * tilesize;
             y = (idy + 2.5) * tilesize;
             game->left_click(x, y);
+            board[idy][idx].hidden = false;
         }
         
         void flag_tile(int idy, int idx){
@@ -113,97 +139,50 @@ class MinesweeperAI {
         void print_border(void){
             for (int row=0; row<nrows; row++)
                 for (int col=0; col<ncols; col++)
-                    if (board[row][col].isBorder)
+                    if (board[row][col].isBorderNum)
                         std::cout << row << " " << col << " " << board[row][col].val << std::endl;
         }
 
-        void get_border_tiles(void){
-            bool oU, oD, oL, oR;
+        void find_border_numbers(void){
             for (int i=0; i<nrows; i++){
                 for (int j=0; j<ncols; j++){
                     if (board[i][j].flagged || board[i][j].hidden)
                         continue;
-                    oU = false, oD = false,  oL =false, oR = false;
-                    oU = (i == 0);
-                    oD = (i == nrows-1);
-                    oL = (j == 0);
-                    oR = (j == ncols-1);
                     
-                    if(!oU && board[i-1][j].hidden) board[i][j].isBorder = true;
-                    if(!oD && board[i+1][j].hidden) board[i][j].isBorder = true;
-                    if(!oL && board[i][j-1].hidden) board[i][j].isBorder = true;
-                    if(!oR && board[i][j+1].hidden) board[i][j].isBorder = true;
-                    
-                    if(!oU && !oL && board[i-1][j-1].hidden) board[i][j].isBorder = true;
-                    if(!oU && !oR && board[i-1][j+1].hidden) board[i][j].isBorder = true;
-                    if(!oD && !oL && board[i+1][j-1].hidden) board[i][j].isBorder = true;
-                    if(!oD && !oR && board[i+1][j+1].hidden) board[i][j].isBorder = true; 
+                    for (auto& x : board[i][j].neighbours){
+                        if(x->hidden){
+                            board[i][j].isBorderNum = true;
+                            break;
+                        }
+                    }
                 }
             }
         }
 
         int basic_hidden_neighbour_rule(int i, int j){
             int n = 0;
-            bool oU = false, oD = false,  oL =false, oR = false;
-            oU = (i == 0);
-            oD = (i == nrows-1);
-            oL = (j == 0);
-            oR = (j == ncols-1);
-            
-            if(!oU && (board[i-1][j].hidden || board[i-1][j].flagged)) n++;
-            if(!oD && (board[i+1][j].hidden || board[i+1][j].flagged)) n++;
-            if(!oL && (board[i][j-1].hidden || board[i][j-1].flagged)) n++;
-            if(!oR && (board[i][j+1].hidden || board[i][j+1].flagged)) n++;
-            
-            if(!oU && !oL && (board[i-1][j-1].hidden || board[i-1][j-1].flagged)) n++;
-            if(!oU && !oR && (board[i-1][j+1].hidden || board[i-1][j+1].flagged)) n++;
-            if(!oD && !oL && (board[i+1][j-1].hidden || board[i+1][j-1].flagged)) n++;
-            if(!oD && !oR && (board[i+1][j+1].hidden || board[i+1][j+1].flagged)) n++; 
+            for (auto& x : board[i][j].neighbours)
+                if(x->hidden || x->flagged) n++;
             
             if(n == board[i][j].val){
-                if(!oU && board[i-1][j].hidden) flag_tile(i-1,j);
-                if(!oD && board[i+1][j].hidden) flag_tile(i+1,j);
-                if(!oL && board[i][j-1].hidden) flag_tile(i,j-1);
-                if(!oR && board[i][j+1].hidden) flag_tile(i,j+1); 
-                if(!oU && !oL && board[i-1][j-1].hidden) flag_tile(i-1,j-1);
-                if(!oU && !oR && board[i-1][j+1].hidden) flag_tile(i-1,j+1);
-                if(!oD && !oL && board[i+1][j-1].hidden) flag_tile(i+1,j-1);
-                if(!oD && !oR && board[i+1][j+1].hidden) flag_tile(i+1,j+1);
+                for (auto& x : board[i][j].neighbours)
+                    if(x->hidden) flag_tile(x->row,x->col);
                 return 1;
-            }else
-                return 0;
+            }
+            return 0;
         }
         
         int basic_flag_rule(int i, int j){
             int n = 0;
-            bool oU = false, oD = false,  oL =false, oR = false;
-            oU = (i == 0);
-            oD = (i == nrows-1);
-            oL = (j == 0);
-            oR = (j == ncols-1);
-
-            if(!oU && board[i-1][j].flagged) n++;
-            if(!oD && board[i+1][j].flagged) n++;
-            if(!oL && board[i][j-1].flagged) n++;
-            if(!oR && board[i][j+1].flagged) n++;
-            
-            if(!oU && !oL && board[i-1][j-1].flagged) n++;
-            if(!oU && !oR && board[i-1][j+1].flagged) n++;
-            if(!oD && !oL && board[i+1][j-1].flagged) n++;
-            if(!oD && !oR && board[i+1][j+1].flagged) n++; 
+            for (auto& x : board[i][j].neighbours)
+                if(x->flagged) n++;
             
             if(n == board[i][j].val){
-                if(!oU && board[i-1][j].hidden) click_tile(i-1,j);
-                if(!oD && board[i+1][j].hidden) click_tile(i+1,j);
-                if(!oL && board[i][j-1].hidden) click_tile(i,j-1);
-                if(!oR && board[i][j+1].hidden) click_tile(i,j+1); 
-                if(!oU && !oL && board[i-1][j-1].hidden) click_tile(i-1,j-1);
-                if(!oU && !oR && board[i-1][j+1].hidden) click_tile(i-1,j+1);
-                if(!oD && !oL && board[i+1][j-1].hidden) click_tile(i+1,j-1);
-                if(!oD && !oR && board[i+1][j+1].hidden) click_tile(i+1,j+1);
+                for (auto& x : board[i][j].neighbours)
+                    if(x->hidden) click_tile(x->row,x->col);
                 return 1;
-            }else
-                return 0;
+            }
+            return 0;
         }
 
 
