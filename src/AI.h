@@ -42,6 +42,7 @@ class MinesweeperAI {
             num_flags = game->num_flags;
             tilesize = game->s;
             board = std::vector<std::vector<Tile>>(nrows, std::vector<Tile>(ncols,default_tile));
+            std::vector<std::vector<Tile*>> border;
         }
 
         void read_board(void){
@@ -82,9 +83,6 @@ class MinesweeperAI {
             }
 
             find_border_numbers();
-            
-            /* print_vals(); */
-            /* print_border(); */
         }
 
         /* void step(Minesweeper & game){ */
@@ -136,13 +134,6 @@ class MinesweeperAI {
             std::cout << std::endl;
         }
 
-        void print_border(void){
-            for (int row=0; row<nrows; row++)
-                for (int col=0; col<ncols; col++)
-                    if (board[row][col].isBorderNum)
-                        std::cout << row << " " << col << " " << board[row][col].val << std::endl;
-        }
-
         void find_border_numbers(void){
             for (int i=0; i<nrows; i++){
                 for (int j=0; j<ncols; j++){
@@ -185,6 +176,21 @@ class MinesweeperAI {
             return 0;
         }
 
+        /* void get_hidden_border(void){ */
+        /*     for (int i=0; i<nrows; i++){ */
+        /*         for (int j=0; j<ncols; j++){ */
+        /*             if (board[i][j].flagged || !board[i][j].hidden) */
+        /*                 continue; */
+        /*             border */
+        /*             for (auto& x : board[i][j].neighbours){ */
+        /*                 if(x->hidden){ */
+        /*                     board[i][j].isBorderNum = true; */
+        /*                     break; */
+        /*                 } */
+        /*             } */
+        /*         } */
+        /*     } */
+        /* } */
 
 };
 
