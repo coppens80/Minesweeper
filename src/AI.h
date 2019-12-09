@@ -7,6 +7,7 @@
 #include "minesweeper.h"
 #include "tile.h"
 #include <iomanip>
+#include <stdlib.h> //abs
 
 struct Tile {
     int row;
@@ -28,6 +29,7 @@ class MinesweeperAI {
         float tilesize; 
     private:
         std::vector<std::vector<Tile>> board;
+        std::vector<std::vector<Tile*>> border;
         float x, y;
         Minesweeper *game;
         Tile default_tile;
@@ -42,7 +44,6 @@ class MinesweeperAI {
             num_flags = game->num_flags;
             tilesize = game->s;
             board = std::vector<std::vector<Tile>>(nrows, std::vector<Tile>(ncols,default_tile));
-            std::vector<std::vector<Tile*>> border;
         }
 
         void read_board(void){
@@ -83,6 +84,7 @@ class MinesweeperAI {
             }
 
             find_border_numbers();
+            get_hidden_border();
         }
 
         /* void step(Minesweeper & game){ */
@@ -176,21 +178,60 @@ class MinesweeperAI {
             return 0;
         }
 
-        /* void get_hidden_border(void){ */
-        /*     for (int i=0; i<nrows; i++){ */
-        /*         for (int j=0; j<ncols; j++){ */
-        /*             if (board[i][j].flagged || !board[i][j].hidden) */
-        /*                 continue; */
-        /*             border */
-        /*             for (auto& x : board[i][j].neighbours){ */
-        /*                 if(x->hidden){ */
-        /*                     board[i][j].isBorderNum = true; */
-        /*                     break; */
-        /*                 } */
-        /*             } */
-        /*         } */
-        /*     } */
-        /* } */
+        void get_hidden_border(void){
+            border.clear(); 
+            std::vector<Tile*> queue;
+            for (int i=0; i<nrows; i++){
+                for (int j=0; j<ncols; j++){
+                    if (board[i][j].flagged || !board[i][j].hidden)
+                        continue;
+                    for (auto& x : board[i][j].neighbours){
+                        if(x->hidden == false && x->flagged == false){
+                            queue.push_back(&board[i][j]);
+                            break;
+                        }
+                    }
+                }
+            }
+            border.push_back(std::vector<Tile*> (1,queue[0]));
+            queue.erase(queue.begin());
+           
+            /* std::cout << "Queue: \n"; */ 
+            /* for(auto &x : queue) */
+            /*     std::cout << x << " " <<  x->row << " " << x->col << std::endl; */
+            /* std::cout << "Border: \n"; */ 
+            /* for(auto &x : border[0]) */
+            /*     std::cout << x << " " <<  x->row << " " << x->col << std::endl; */
+            
+            int i = 0;
+            while(queue.begin() != queue.end()){
+                int prev_size = border[i].size();
+                for(auto &b : border[i]){
+                    for(auto it=queue.begin(); it!=queue.end(); it++){
+                        if(abs((*it)->row - b->row) <= 1 && abs((*it)->col -  b->col) <= 1){
+                            border[i].push_back(*it);
+                            queue.erase(it);
+                            break;
+                        }
+                    }
+                }
+                if (prev_size == border[i].size()){
+                    border.push_back(std::vector<Tile*> (1,queue[0]));
+                    queue.erase(queue.begin());
+                    i++;
+                }
+            }
+
+            /* std::cout << "Queue: \n"; */ 
+            /* for(auto &x : queue) */
+            /*     std::cout << x << " " <<  x->row << " " << x->col << std::endl; */
+            for(int i=0; i<border.size(); i++){
+                std::cout << "Border[" << i << "]: (" << border[i].size() << ") \n"; 
+                for(auto &x : border[i])
+                    std::cout << x << " " <<  x->row << " " << x->col << std::endl;
+            }
+            std::cout << "===================\n"; 
+        }
 
 };
 
