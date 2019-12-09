@@ -195,20 +195,13 @@ class MinesweeperAI {
             }
             border.push_back(std::vector<Tile*> (1,queue[0]));
             queue.erase(queue.begin());
-           
-            /* std::cout << "Queue: \n"; */ 
-            /* for(auto &x : queue) */
-            /*     std::cout << x << " " <<  x->row << " " << x->col << std::endl; */
-            /* std::cout << "Border: \n"; */ 
-            /* for(auto &x : border[0]) */
-            /*     std::cout << x << " " <<  x->row << " " << x->col << std::endl; */
             
             int i = 0;
             while(queue.begin() != queue.end()){
                 int prev_size = border[i].size();
                 for(auto &b : border[i]){
                     for(auto it=queue.begin(); it!=queue.end(); it++){
-                        if(abs((*it)->row - b->row) <= 1 && abs((*it)->col -  b->col) <= 1){
+                        if(( abs((*it)->row - b->row) + abs((*it)->col -  b->col) ) == 1){
                             border[i].push_back(*it);
                             queue.erase(it);
                             break;
@@ -221,10 +214,7 @@ class MinesweeperAI {
                     i++;
                 }
             }
-
-            /* std::cout << "Queue: \n"; */ 
-            /* for(auto &x : queue) */
-            /*     std::cout << x << " " <<  x->row << " " << x->col << std::endl; */
+            
             for(int i=0; i<border.size(); i++){
                 std::cout << "Border[" << i << "]: (" << border[i].size() << ") \n"; 
                 for(auto &x : border[i])
