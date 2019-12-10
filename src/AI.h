@@ -41,7 +41,7 @@ class MinesweeperAI {
             nrows = game->nrows;
             ncols = game->ncols;
             num_mines = game->num_mines;
-            num_flags = game->num_flags;
+            //num_flags = game->num_flags;
             tilesize = game->s;
             board = std::vector<std::vector<Tile>>(nrows, std::vector<Tile>(ncols,default_tile));
         }
@@ -84,7 +84,6 @@ class MinesweeperAI {
             }
 
             find_border_numbers();
-            get_hidden_border();
         }
 
         /* void step(Minesweeper & game){ */
@@ -221,6 +220,60 @@ class MinesweeperAI {
                     std::cout << x << " " <<  x->row << " " << x->col << std::endl;
             }
             std::cout << "===================\n"; 
+        }
+
+        void tank_solver(void){
+            get_hidden_border();
+
+            //create solutions array...
+            //create Mines array...
+            //create EmptyTile array
+
+            for (int i=0; i<border.size(); i++){
+                tank_recurse(border[i], 0);
+            }
+
+        }
+
+        void tank_recurse(std::vector<Tile*> border_region, int k){
+            int flag_count = 0;
+            // check if num mines and num empty makes sense for ALL tiles, if not, exit
+            for (int i=0; i<nrows; i++){
+                for (int j=0; j<ncols; j++){
+                    if (board[i][j].hidden || board[i][j].flagged)
+                        continue;
+                    if(Mines[i][j])
+                        flag_count++;
+                    //count num mines around i,j
+                    if (m > board[i][j].val)
+                        return;
+
+                    //count num free spaces
+                    //
+                    //if (numFree > 
+                }
+            }
+
+            if (flag_count > num_mines)
+                return;
+
+            (if k == border_region.size()){
+                if(flag_count < num_mines)
+                    return;
+                //make num mines boolean array (1=mine, 0=notmine)
+                //add array to solutions
+            }
+            int idx = border_region[k]->col;
+            int idy = border_region[k]->row;
+
+            Mines[idx][idx] = true;
+            tank_recurse(border_region, k++);
+            Mines[idy][idx] = false;
+            
+            Empty[idx][idx] = true;
+            tank_recurse(border_region, k++);
+            Empty[idy][idx] = false;
+
         }
 
 };
