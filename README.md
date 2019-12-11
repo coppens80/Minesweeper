@@ -24,7 +24,7 @@ sudo apt-get install libsfml-dev
 
 ### Tank Solver
 
-### Guessing (Last Attempt)
+### Guess
 
 <!---
 ### Installing
