@@ -30,6 +30,7 @@ class MinesweeperAI {
     private:
         std::vector<std::vector<Tile>> board;
         std::vector<std::vector<Tile*>> border;
+        std::vector<std::vector<int>> solutions, Mines, NoMines;
         float x, y;
         Minesweeper *game;
         Tile default_tile;
@@ -60,6 +61,7 @@ class MinesweeperAI {
                         board[row][col].val = -2;
                         board[row][col].flagged = true;
                         board[row][col].hidden = false;
+                        ++num_flags;
                     }
                 }
             }
@@ -105,6 +107,45 @@ class MinesweeperAI {
             
             if (passed == 0)
                 std::cout << "All basic tests failed\n";
+        }
+
+        void tank_solver(void){
+            get_hidden_border();
+
+            Mines = std::vector<std::vector<int>>(nrows, std::vector<int>(ncols,0));
+            NoMines = std::vector<std::vector<int>>(nrows, std::vector<int>(ncols,0));
+            for (int i=0; i<nrows; i++)
+                for (int j=0; j<ncols; j++){
+                    if(board[i][j].flagged) Mines[i][j] = 1;
+                    if(board[i][j].val >= 0) NoMines[i][j] = 1;
+                }
+
+            //for (int i=0; i<int(border.size()); i++){
+            for (int i=0; i<1; i++){
+                std::cout << "Border[" << i << "]: (" << border[i].size() << ") \n"; 
+                for(auto &x : border[i])
+                    std::cout <<  x->row << " " << x->col << std::endl;
+                
+                solutions.clear();
+                tank_recurse(border[i], 0, i);
+                
+                std::vector<float> result = std::vector<float>(border[i].size(),0);
+                for (int j=0; j<solutions.size(); j++){
+                    std::cout << "Solution[" << j << "]: (" << solutions[j].size() << ") \n"; 
+                    for(int x=0; x<solutions[j].size(); x++){
+                        std::cout << solutions[j][x] << " ";
+                        result[x] += float(solutions[j][x]);
+                    }
+                    std::cout << std::endl;
+                }
+                std::cout << "Result: \n"; 
+                for(int x=0; x<result.size(); x++){
+                    std::cout << result[x]/solutions.size() << " ";
+                }
+                std::cout << std::endl;
+            }
+            std::cout << "===================\n"; 
+
         }
 
 
@@ -197,7 +238,7 @@ class MinesweeperAI {
             
             int i = 0;
             while(queue.begin() != queue.end()){
-                int prev_size = border[i].size();
+                unsigned int prev_size = border[i].size();
                 for(auto &b : border[i]){
                     for(auto it=queue.begin(); it!=queue.end(); it++){
                         if(( abs((*it)->row - b->row) + abs((*it)->col -  b->col) ) == 1){
@@ -213,66 +254,71 @@ class MinesweeperAI {
                     i++;
                 }
             }
-            
-            for(int i=0; i<border.size(); i++){
-                std::cout << "Border[" << i << "]: (" << border[i].size() << ") \n"; 
-                for(auto &x : border[i])
-                    std::cout << x << " " <<  x->row << " " << x->col << std::endl;
-            }
-            std::cout << "===================\n"; 
         }
 
-        void tank_solver(void){
-            get_hidden_border();
-
-            //create solutions array...
-            //create Mines array...
-            //create EmptyTile array
-
-            for (int i=0; i<border.size(); i++){
-                tank_recurse(border[i], 0);
-            }
-
-        }
-
-        void tank_recurse(std::vector<Tile*> border_region, int k){
+        void tank_recurse(std::vector<Tile*> border_region, unsigned int k, int N){
+            std::cout << "Recurse level " << k << " of " << border_region.size() << 
+                " for border " << N << std::endl;
             int flag_count = 0;
-            // check if num mines and num empty makes sense for ALL tiles, if not, exit
+            // Check all tiles to see if current mine and empty tile arrangement makes sense
             for (int i=0; i<nrows; i++){
                 for (int j=0; j<ncols; j++){
-                    if (board[i][j].hidden || board[i][j].flagged)
-                        continue;
                     if(Mines[i][j])
                         flag_count++;
-                    //count num mines around i,j
-                    if (m > board[i][j].val)
-                        return;
 
-                    //count num free spaces
-                    //
-                    //if (numFree > 
+                    if (board[i][j].hidden || board[i][j].flagged)
+                        continue;
+                    
+                    int mine_count = 0;
+                    int free_count = 0;
+                    for (auto& x : board[i][j].neighbours){
+                        if(Mines[x->row][x->col]) mine_count++;
+                        if(NoMines[x->row][x->col]) free_count++;
+                    }
+                    if (mine_count > board[i][j].val){
+                        std::cout << "Failed rule #1\n";
+                        return; //solution fails: too many mines
+                    }
+                    
+                    int num_neighbours = board[i][j].neighbours.size(); 
+                    if (num_neighbours - free_count < board[i][j].val){
+                        std::cout << "Failed rule #2\n";
+                        return; // solution fails: too many free tiles(non-mines)
+                    }
                 }
             }
 
-            if (flag_count > num_mines)
+            if (flag_count > num_mines){
+                std::cout << "Failed rule #3\n";
                 return;
-
-            (if k == border_region.size()){
-                if(flag_count < num_mines)
-                    return;
-                //make num mines boolean array (1=mine, 0=notmine)
-                //add array to solutions
             }
+
+            if (k == border_region.size()){
+                /* if(flag_count < num_mines){ */
+                /*     std::cout << "Failed rule #4\n"; */
+                /*     return; //solution fails: not enough mines */
+                /* } */
+
+                // Add to solutions
+                std::vector<int> solution; //placeholder
+                for(auto &x : border_region)
+                    solution.push_back(Mines[x->row][x->col]);
+                solutions.push_back(solution);
+
+                std::cout << "Solution found!\n";
+                return;
+            }
+
             int idx = border_region[k]->col;
             int idy = border_region[k]->row;
 
-            Mines[idx][idx] = true;
-            tank_recurse(border_region, k++);
+            Mines[idy][idx] = true;
+            tank_recurse(border_region, k+1, N);
             Mines[idy][idx] = false;
             
-            Empty[idx][idx] = true;
-            tank_recurse(border_region, k++);
-            Empty[idy][idx] = false;
+            NoMines[idy][idx] = true;
+            tank_recurse(border_region, k+1, N);
+            NoMines[idy][idx] = false;
 
         }
 

@@ -52,8 +52,12 @@ int main(int argc, char** argv){
                     solver.read_board();
                     solver.compute();
                 }
+                if (event.key.code == sf::Keyboard::M){
+                    solver.read_board();
+                    solver.tank_solver();
+                }
                 if (event.key.code == sf::Keyboard::R){
-                    printf("reset\n");
+                    printf("==================\n");
                     game.reset();
                     /* std::cout << "Average frame time: " << timer.getElapsedTime().asSeconds() * 1000 / n << std::endl; */
                     timer.restart();
