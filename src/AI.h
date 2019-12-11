@@ -140,7 +140,9 @@ class MinesweeperAI {
                 }
                 std::cout << "Result: \n"; 
                 for(int x=0; x<result.size(); x++){
-                    std::cout << result[x]/solutions.size() << " ";
+                    std::cout << "(" << border[i][x]->row << "," << 
+                        border[i][x]->col << ") " <<
+                        result[x]/solutions.size() << std::endl;
                 }
                 std::cout << std::endl;
             }
@@ -257,8 +259,6 @@ class MinesweeperAI {
         }
 
         void tank_recurse(std::vector<Tile*> border_region, unsigned int k, int N){
-            std::cout << "Recurse level " << k << " of " << border_region.size() << 
-                " for border " << N << std::endl;
             int flag_count = 0;
             // Check all tiles to see if current mine and empty tile arrangement makes sense
             for (int i=0; i<nrows; i++){
@@ -276,20 +276,20 @@ class MinesweeperAI {
                         if(NoMines[x->row][x->col]) free_count++;
                     }
                     if (mine_count > board[i][j].val){
-                        std::cout << "Failed rule #1\n";
+                        //std::cout << "Failed rule #1\n";
                         return; //solution fails: too many mines
                     }
                     
                     int num_neighbours = board[i][j].neighbours.size(); 
                     if (num_neighbours - free_count < board[i][j].val){
-                        std::cout << "Failed rule #2\n";
+                        //std::cout << "Failed rule #2\n";
                         return; // solution fails: too many free tiles(non-mines)
                     }
                 }
             }
 
             if (flag_count > num_mines){
-                std::cout << "Failed rule #3\n";
+                //std::cout << "Failed rule #3\n";
                 return;
             }
 
@@ -305,7 +305,7 @@ class MinesweeperAI {
                     solution.push_back(Mines[x->row][x->col]);
                 solutions.push_back(solution);
 
-                std::cout << "Solution found!\n";
+                //std::cout << "Solution found!\n";
                 return;
             }
 
