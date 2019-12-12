@@ -112,6 +112,11 @@ class MinesweeperAI {
         void tank_solver(void){
             get_hidden_border();
 
+            if(border.size() == 0){
+                std::cout << "Tank solver failed: No border tiles.\n";
+                return;
+            }
+
             Mines = std::vector<std::vector<int>>(nrows, std::vector<int>(ncols,0));
             NoMines = std::vector<std::vector<int>>(nrows, std::vector<int>(ncols,0));
             for (int i=0; i<nrows; i++)
@@ -120,12 +125,7 @@ class MinesweeperAI {
                     if(board[i][j].val >= 0) NoMines[i][j] = 1;
                 }
 
-            //for (int i=0; i<int(border.size()); i++){
-            for (int i=0; i<1; i++){
-                std::cout << "Border[" << i << "]: (" << border[i].size() << ") \n"; 
-                for(auto &x : border[i])
-                    std::cout <<  x->row << " " << x->col << std::endl;
-                
+            for (int i=0; i<int(border.size()); i++){
                 solutions.clear();
                 tank_recurse(border[i], 0, i);
                 
@@ -235,6 +235,9 @@ class MinesweeperAI {
                     }
                 }
             }
+            if(queue.size() == 0)
+                return;
+
             border.push_back(std::vector<Tile*> (1,queue[0]));
             queue.erase(queue.begin());
             
