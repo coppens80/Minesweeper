@@ -42,7 +42,6 @@ class MinesweeperAI {
             nrows = game->nrows;
             ncols = game->ncols;
             num_mines = game->num_mines;
-            //num_flags = game->num_flags;
             tilesize = game->s;
             board = std::vector<std::vector<Tile>>(nrows, std::vector<Tile>(ncols,default_tile));
         }
@@ -119,31 +118,35 @@ class MinesweeperAI {
 
             Mines = std::vector<std::vector<int>>(nrows, std::vector<int>(ncols,0));
             NoMines = std::vector<std::vector<int>>(nrows, std::vector<int>(ncols,0));
-            for (int i=0; i<nrows; i++)
+            for (int i=0; i<nrows; i++){
                 for (int j=0; j<ncols; j++){
                     if(board[i][j].flagged) Mines[i][j] = 1;
                     if(board[i][j].val >= 0) NoMines[i][j] = 1;
                 }
+            }
 
             for (int i=0; i<int(border.size()); i++){
                 solutions.clear();
-                tank_recurse(border[i], 0, i);
+                tank_recurse(border[i], 0);
                 
                 std::vector<float> result = std::vector<float>(border[i].size(),0);
-                for (int j=0; j<solutions.size(); j++){
-                    std::cout << "Solution[" << j << "]: (" << solutions[j].size() << ") \n"; 
-                    for(int x=0; x<solutions[j].size(); x++){
-                        std::cout << solutions[j][x] << " ";
-                        result[x] += float(solutions[j][x]);
-                    }
-                    std::cout << std::endl;
+                for(auto &solution : solutions)
+                    for(int j=0; j<int(solution.size()); j++)
+                        result[j] += float(solution[j]);
+               
+                for(auto &val : result){
+                    val /= solutions.size();
                 }
+
                 std::cout << "Result: \n"; 
-                for(int x=0; x<result.size(); x++){
-                    std::cout << "(" << border[i][x]->row << "," << 
-                        border[i][x]->col << ") " <<
-                        result[x]/solutions.size() << std::endl;
+                for(int j=0; j<result.size(); j++){
+                    std::cout << "(" << border[i][j]->row << "," << border[i][j]->col << ") " << result[j] << " " << std::endl;
+                    if(result[j] == 0)
+                        click_tile(border[i][j]->row,border[i][j]->col);
+                    if(result[j] == 1)
+                        flag_tile(border[i][j]->row,border[i][j]->col);
                 }
+
                 std::cout << std::endl;
             }
             std::cout << "===================\n"; 
@@ -261,7 +264,7 @@ class MinesweeperAI {
             }
         }
 
-        void tank_recurse(std::vector<Tile*> border_region, unsigned int k, int N){
+        void tank_recurse(std::vector<Tile*> border_region, unsigned int k){
             int flag_count = 0;
             // Check all tiles to see if current mine and empty tile arrangement makes sense
             for (int i=0; i<nrows; i++){
@@ -316,11 +319,11 @@ class MinesweeperAI {
             int idy = border_region[k]->row;
 
             Mines[idy][idx] = true;
-            tank_recurse(border_region, k+1, N);
+            tank_recurse(border_region, k+1);
             Mines[idy][idx] = false;
             
             NoMines[idy][idx] = true;
-            tank_recurse(border_region, k+1, N);
+            tank_recurse(border_region, k+1);
             NoMines[idy][idx] = false;
 
         }
