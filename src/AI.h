@@ -104,53 +104,13 @@ class MinesweeperAI {
                 }
             }
             
-            if (passed == 0)
-                std::cout << "All basic tests failed\n";
-        }
-
-        void tank_solver(void){
-            get_hidden_border();
-
-            if(border.size() == 0){
-                std::cout << "Tank solver failed: No border tiles.\n";
-                return;
+            if (passed == 0){
+                std::cout << "Basic tests failed\n";
+                passed += tank_solver();
             }
-
-            Mines = std::vector<std::vector<int>>(nrows, std::vector<int>(ncols,0));
-            NoMines = std::vector<std::vector<int>>(nrows, std::vector<int>(ncols,0));
-            for (int i=0; i<nrows; i++){
-                for (int j=0; j<ncols; j++){
-                    if(board[i][j].flagged) Mines[i][j] = 1;
-                    if(board[i][j].val >= 0) NoMines[i][j] = 1;
-                }
+            if(passed == 0){
+                std::cout << "Tank solver failed\n";
             }
-
-            for (int i=0; i<int(border.size()); i++){
-                solutions.clear();
-                tank_recurse(border[i], 0);
-                
-                std::vector<float> result = std::vector<float>(border[i].size(),0);
-                for(auto &solution : solutions)
-                    for(int j=0; j<int(solution.size()); j++)
-                        result[j] += float(solution[j]);
-               
-                for(auto &val : result){
-                    val /= solutions.size();
-                }
-
-                std::cout << "Result: \n"; 
-                for(int j=0; j<result.size(); j++){
-                    std::cout << "(" << border[i][j]->row << "," << border[i][j]->col << ") " << result[j] << " " << std::endl;
-                    if(result[j] == 0)
-                        click_tile(border[i][j]->row,border[i][j]->col);
-                    if(result[j] == 1)
-                        flag_tile(border[i][j]->row,border[i][j]->col);
-                }
-
-                std::cout << std::endl;
-            }
-            std::cout << "===================\n"; 
-
         }
 
 
@@ -222,6 +182,56 @@ class MinesweeperAI {
             }
             return 0;
         }
+        
+        int tank_solver(void){
+            get_hidden_border();
+
+            if(border.size() == 0)
+                return 0;  // No border tiles
+
+            Mines = std::vector<std::vector<int>>(nrows, std::vector<int>(ncols,0));
+            NoMines = std::vector<std::vector<int>>(nrows, std::vector<int>(ncols,0));
+            for (int i=0; i<nrows; i++){
+                for (int j=0; j<ncols; j++){
+                    if(board[i][j].flagged) Mines[i][j] = 1;
+                    if(board[i][j].val >= 0) NoMines[i][j] = 1;
+                }
+            }
+
+            for (int i=0; i<int(border.size()); i++){
+                bool success = false;
+                solutions.clear();
+                tank_recurse(border[i], 0);
+                
+                std::vector<float> result = std::vector<float>(border[i].size(),0);
+                for(auto &solution : solutions)
+                    for(int j=0; j<int(solution.size()); j++)
+                        result[j] += float(solution[j]);
+               
+                for(auto &val : result)
+                    val /= solutions.size();
+
+                //std::cout << "Result: \n"; 
+                for(unsigned int j=0; j<result.size(); j++){
+                    //std::cout << "(" << border[i][j]->row << "," << border[i][j]->col << ") " << result[j] << " " << std::endl;
+                    if(result[j] == 0){
+                        click_tile(border[i][j]->row,border[i][j]->col);
+                        success = true;
+                    }
+                    if(result[j] == 1){
+                        flag_tile(border[i][j]->row,border[i][j]->col);
+                        success = true;
+                    }
+                }
+                if(success)  return 1;
+                else         return 0;
+
+                //std::cout << std::endl;
+            }
+            //std::cout << "===================\n"; 
+
+        }
+
 
         void get_hidden_border(void){
             border.clear(); 
@@ -281,23 +291,17 @@ class MinesweeperAI {
                         if(Mines[x->row][x->col]) mine_count++;
                         if(NoMines[x->row][x->col]) free_count++;
                     }
-                    if (mine_count > board[i][j].val){
-                        //std::cout << "Failed rule #1\n";
+                    if (mine_count > board[i][j].val)
                         return; //solution fails: too many mines
-                    }
                     
                     int num_neighbours = board[i][j].neighbours.size(); 
-                    if (num_neighbours - free_count < board[i][j].val){
-                        //std::cout << "Failed rule #2\n";
+                    if (num_neighbours - free_count < board[i][j].val)
                         return; // solution fails: too many free tiles(non-mines)
-                    }
                 }
             }
 
-            if (flag_count > num_mines){
-                //std::cout << "Failed rule #3\n";
-                return;
-            }
+            if (flag_count > num_mines)
+                return; // solution fails: too many mines
 
             if (k == border_region.size()){
                 /* if(flag_count < num_mines){ */
@@ -311,7 +315,6 @@ class MinesweeperAI {
                     solution.push_back(Mines[x->row][x->col]);
                 solutions.push_back(solution);
 
-                //std::cout << "Solution found!\n";
                 return;
             }
 

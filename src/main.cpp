@@ -52,10 +52,10 @@ int main(int argc, char** argv){
                     solver.read_board();
                     solver.compute();
                 }
-                if (event.key.code == sf::Keyboard::M){
-                    solver.read_board();
-                    solver.tank_solver();
-                }
+                /* if (event.key.code == sf::Keyboard::M){ */
+                /*     solver.read_board(); */
+                /*     solver.tank_solver(); */
+                /* } */
                 if (event.key.code == sf::Keyboard::R){
                     printf("==================\n");
                     game.reset();

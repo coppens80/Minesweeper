@@ -19,8 +19,7 @@ override LDFLAGS += \
 	-lsfml-system
 
 DEBUG += g \
-		-Wextra \
-		-Wall 
+		-Wextra 
 		
 TARGETS = test
 
