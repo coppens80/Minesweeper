@@ -31,9 +31,9 @@ class MinesweeperAI {
         std::vector<std::vector<Tile>> board;
         std::vector<std::vector<Tile*>> border;
         std::vector<std::vector<int>> solutions, Mines, NoMines;
-        float x, y;
         Minesweeper *game;
         Tile default_tile;
+        int unknown_tiles;
 
     // Methods
     public:
@@ -47,6 +47,7 @@ class MinesweeperAI {
         }
 
         void read_board(void){
+            unknown_tiles = nrows * ncols;
             for (int row=0; row<nrows; row++){
                 for (int col=0; col<ncols; col++){
                     board[row][col] = default_tile;
@@ -55,12 +56,14 @@ class MinesweeperAI {
                     if (game->grid[col + row * ncols].is_clicked){
                         board[row][col].val = game->grid[col + row * ncols].val;
                         board[row][col].hidden = false;
+                        --unknown_tiles;
                     }
                     else if (game->grid[col + row * ncols].flagged){
                         board[row][col].val = -2;
                         board[row][col].flagged = true;
                         board[row][col].hidden = false;
                         ++num_flags;
+                        --unknown_tiles;
                     }
                 }
             }
@@ -87,12 +90,6 @@ class MinesweeperAI {
             find_border_numbers();
         }
 
-        /* void step(Minesweeper & game){ */
-        /*     read_board(); */
-        /*     compute(); */
-        /*     //click_tile(); */
-        /* } */
-
         void compute(void){
             int passed = 0;
             for (int row=0; row<nrows; row++){
@@ -107,6 +104,7 @@ class MinesweeperAI {
             if (passed == 0){
                 std::cout << "Basic tests failed\n";
                 passed += tank_solver();
+                std::cout << unknown_tiles << " unknown tiles (after ts)\n";
             }
             if(passed == 0){
                 std::cout << "Tank solver failed\n";
@@ -116,18 +114,20 @@ class MinesweeperAI {
 
     private:
         void click_tile(int idy, int idx){
-            x = (idx + 1.5) * tilesize;
-            y = (idy + 2.5) * tilesize;
+            float x = (idx + 1.5) * tilesize;
+            float y = (idy + 2.5) * tilesize;
             game->left_click(x, y);
             board[idy][idx].hidden = false;
+            --unknown_tiles;
         }
         
         void flag_tile(int idy, int idx){
-            x = (idx + 1.5) * tilesize;
-            y = (idy + 2.5) * tilesize;
+            float x = (idx + 1.5) * tilesize;
+            float y = (idy + 2.5) * tilesize;
             if (!board[idy][idx].flagged){
                 game->right_click(x, y);
                 board[idy][idx].flagged = true;
+                --unknown_tiles;
             }
         }
 
@@ -250,6 +250,10 @@ class MinesweeperAI {
             }
             if(queue.size() == 0)
                 return;
+
+            std::cout << unknown_tiles << " unknown tiles\n";
+            std::cout << queue.size() << " border tiles\n";
+            std::cout << unknown_tiles - queue.size() << " outside border\n";
 
             border.push_back(std::vector<Tile*> (1,queue[0]));
             queue.erase(queue.begin());
